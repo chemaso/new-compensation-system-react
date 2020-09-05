@@ -1,0 +1,8 @@
+export const ADD_TODO = "ADD_TODO";
+export const TOGGLE_TODO = "TOGGLE_TODO";
+export const SET_FILTER = "SET_FILTER";
+
+export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS'
+export const SET_LOGGED_IN = 'SET_LOGGED_IN'
+export const SET_LOGGED_UP = 'SET_LOGGED_UP'
+export const SET_PASSWORD_RECOVERY = 'SET_PASSWORD_RECOVERY'
