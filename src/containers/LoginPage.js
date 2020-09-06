@@ -35,7 +35,7 @@ const LoginPage = ({ getLogin, history, match }) => {
     }
   }
   return (
-    <ExternalAccountWrapper title='Welcome to App' >
+    <ExternalAccountWrapper title='Welcome to SICE' >
       <LoginForm
         onChange={handleFormChange}
         onSubmit={handleSubmit}
