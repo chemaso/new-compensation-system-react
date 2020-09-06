@@ -13,7 +13,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -125,8 +124,7 @@ export default function DashboardPage({ children }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
+ 
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -172,7 +170,7 @@ export default function DashboardPage({ children }) {
         open={open}
       >
         <div className={classes.toolbarIcon}>
-          <img style={{ height: 35, marginTop: 4 }} src={BannerLogo} />
+          <img style={{ height: 35, marginTop: 4 }} alt='sice logo' src={BannerLogo} />
           <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon style={{ color: '#f17f2d' }} />
           </IconButton>

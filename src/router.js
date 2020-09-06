@@ -16,8 +16,6 @@ import DashboardPage from './containers/DashboardPage'
 import Notifications from './components/common/Notifications'
 
 const Users = () => { return (<div>Users</div>) }
-const Home = () => { return (<div>Home</div>) }
-
 const PrivateRoute = ({ children, ...rest }) => {
   const dispatch = useDispatch()
   const userName = sessionStorage.getItem('name')
