@@ -184,8 +184,8 @@ export default function DashboardPage({ children }) {
         <div className={classes.appBarSpacer} />
         <Grid container alignItems='center' style={{ color: 'white', paddingLeft: 30, height: 100, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)'}}>
          <NotificationsIcon fontSize="large" />
-          <Typography variant="h5" style={{ paddingLeft: 10, fontWeight: 'bold'}}>
-           WELCOME TO SICE - INTEGRATIONS
+          <Typography variant="h6" style={{ paddingLeft: 10, fontWeight: 'bold'}}>
+           Lorem Integrations - Order #129882
           </Typography>
         </Grid>
         <Container maxWidth="lg" className={classes.container}>
