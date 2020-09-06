@@ -19,14 +19,14 @@ export const useErrorValidator = (formValues, required) => {
                     ...errorsObject,
                     [item]: 'Password is required.'
                   }
-                  return
+                  return ''
                 }
                 if (str.length < 8) {
                   errorsObject = {
                     ...errorsObject,
                     [item]: 'Password must have at least 8 characters.'
                   }
-                  return
+                  return null
                 }
               }
               if (item === 'email') {
@@ -36,14 +36,14 @@ export const useErrorValidator = (formValues, required) => {
                     ...errorsObject,
                     [item]: 'Email is required.'
                   }
-                  return
+                  return null
                 }
                 if (!validMail) {
                   errorsObject = {
                     ...errorsObject,
                     [item]: 'The Email format is not correct.'
                   }
-                  return
+                  return null
                 }
               }
               if (item === 'firstName') {
