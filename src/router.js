@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import LoginPage from './containers/LoginPage'
 import PasswordRecoveryPage from './containers/PasswordRecoveryPage'
 import SignUpPage from './containers/SignUpPage'
+import DashboardPage from './containers/DashboardPage'
 import Notifications from './components/common/Notifications'
 
 const Users = () => { return (<div>Users</div>) }
@@ -64,7 +65,7 @@ export default function RoutesGenerator() {
           <Users />
         </PrivateRoute>
         <PrivateRoute path="/">
-          <Home />
+          <DashboardPage />
         </PrivateRoute>
       </Switch>
       <Notifications
