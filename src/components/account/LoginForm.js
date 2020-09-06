@@ -74,7 +74,7 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
         Sign In
             </CButton>
       <Grid container>
-        <Grid item xs>
+        <Grid item xs={12} md={6}>
           <Link to="forgot-password" className={classes.link}>
             Forgot password?
                 </Link>

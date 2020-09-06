@@ -52,7 +52,7 @@ const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
                 Recover Password
             </CButton>
             <Grid container>
-                <Grid item xs>
+                <Grid item xs={12} md={6}>
                     <Link to="sign-up" className={classes.link}>
                         {"Don't have an account? Sign Up"}
                     </Link>
