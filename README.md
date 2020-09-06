@@ -1,6 +1,6 @@
 ## NEW COMPENSATION REACT APP
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is being handled under the CI/CD concepts, is being hosted currently in an AWS s3 bucket, with its pipeline in buddy to be deployed on every master branch push, you can check the latest on [live demo link](http://compensation-system.s3-website-sa-east-1.amazonaws.com/login) 
 
 ## Available Scripts
 
