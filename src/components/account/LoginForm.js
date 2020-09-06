@@ -73,7 +73,7 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
       >
         Sign In
             </CButton>
-      <Grid container>
+      <Grid container justify="space-between">
         <Grid item xs={12} md={6}>
           <Link to="forgot-password" className={classes.link}>
             Forgot password?

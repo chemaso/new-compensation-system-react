@@ -51,7 +51,7 @@ const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
             >
                 Recover Password
             </CButton>
-            <Grid container>
+            <Grid container justify="space-between">
                 <Grid item xs={12} md={6}>
                     <Link to="sign-up" className={classes.link}>
                         {"Don't have an account? Sign Up"}
