@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import omit from 'lodash/omit'
-import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
 import { useErrorValidator } from '../hooks/externalAccountValidations'
 import LoginForm from '../components/account/LoginForm'

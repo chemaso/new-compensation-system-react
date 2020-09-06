@@ -1,3 +1,5 @@
+//eslint-disable
+
 import isEmpty from 'lodash/isEmpty'
 
 const validateEmail = (email) => {
@@ -26,7 +28,6 @@ export const useErrorValidator = (formValues, required) => {
                   }
                   return
                 }
-                return
               }
               if (item === 'email') {
                 const validMail = validateEmail(str)
@@ -44,7 +45,6 @@ export const useErrorValidator = (formValues, required) => {
                   }
                   return
                 }
-                return
               }
               if (item === 'firstName') {
                 if (isEmpty(str)) {
@@ -52,9 +52,7 @@ export const useErrorValidator = (formValues, required) => {
                     ...errorsObject,
                     [item]: 'First Name is required.'
                   }
-                  return
                 }
-                return
               }
               if (item === 'lastName') {
                 if (isEmpty(str)) {
@@ -62,9 +60,7 @@ export const useErrorValidator = (formValues, required) => {
                     ...errorsObject,
                     [item]: 'Last Name is required.'
                   }
-                  return
                 }
-                return
               }
               return null
             })
