@@ -69,6 +69,7 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
         fullWidth
         variant="contained"
         color="myBtn"
+        type="submit"
         className={classes.submit}
       >
         Sign In
