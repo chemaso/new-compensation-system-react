@@ -1,6 +1,5 @@
 import React from "react";
 import isEmpty from 'lodash/isEmpty'
-import isNil from 'lodash/isNil'
 import get from 'lodash/get'
 import {
   BrowserRouter as Router,
@@ -9,31 +8,24 @@ import {
   Redirect,
 } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
+import { useAccount } from './hooks/user'
 import LoginPage from './containers/LoginPage'
 import PasswordRecoveryPage from './containers/PasswordRecoveryPage'
 import SignUpPage from './containers/SignUpPage'
 import DashboardPage from './containers/DashboardPage'
 import Notifications from './components/common/Notifications'
 
-const Users = () => { return (<div>Users</div>) }
 const PrivateRoute = ({ children, ...rest }) => {
-  const dispatch = useDispatch()
-  const userName = sessionStorage.getItem('name')
-  const userId = sessionStorage.getItem('id')
+  const { decrypt } = useAccount()
+  let user = useSelector(state => get(state, 'account.user', '{}'))
+  const isAuth = !isEmpty(user)
+  if (isAuth) {
+    user = decrypt(user)
+  }
   return (
     <Route
       {...rest}
       render={({ location }) => {
-        const isAuth = !isNil(userName) && !isNil(userId)
-        if (isAuth) {
-          dispatch({
-            type: 'SET_LOGGED_IN',
-            account: {
-              id: userId,
-              name: userName
-            }
-          })
-        }
         return (isAuth) ? (
           children
         ) : (
@@ -51,7 +43,7 @@ const PrivateRoute = ({ children, ...rest }) => {
 }
 
 export default function RoutesGenerator() {
-  const notifications = useSelector(state => get(state, 'notifications.values', {}))
+  const notifications = useSelector(state => get(state, 'notifications', {}))
   const dispatch = useDispatch()
   return (
     <Router>
@@ -59,20 +51,17 @@ export default function RoutesGenerator() {
         <Route path="/login" component={LoginPage} />
         <Route path="/sign-up" component={SignUpPage} />
         <Route path="/forgot-password" component={PasswordRecoveryPage} />
-        <PrivateRoute path="/users">
-          <Users />
-        </PrivateRoute>
         <PrivateRoute path="/">
           <DashboardPage />
         </PrivateRoute>
       </Switch>
       <Notifications
-        open={!isEmpty(notifications)}
+        open={!isEmpty(notifications.values)}
         onClose={() => dispatch({
           type: 'SET_NOTIFICATIONS',
           notifications: ''
         })}
-        message={notifications}
+        message={notifications.values}
       />
     </Router>
   );

@@ -1,18 +1,16 @@
 import { getLogin, postSignUp, postPasswordRecovery } from '../api'
-import isNil from 'lodash/isNil'
 import { SET_NOTIFICATIONS, SET_LOGGED_IN } from '../actionTypes'
+import { useAccount } from '../hooks/user'
 
 export const setLoggedIn = (account, history) => {
     return (dispatch) =>
         getLogin(account)
             .then(({ data }) => {
-                if (!isNil(data.name) && !isNil(data.id)) {
-                    sessionStorage.setItem('name', data.name)
-                    sessionStorage.setItem('id', data.id)
-                }
+                const { encrypt } = useAccount()
+                const encrypted = encrypt(data)
                 const action = {
                     type: SET_LOGGED_IN,
-                    account: data
+                    account: encrypted
                 }
                 dispatch(action)
                 window.location.replace('/')
@@ -59,15 +57,29 @@ export const setLoggedUp = (form, history) => {
             .catch((e) => {
                 const action = {
                     type: SET_NOTIFICATIONS,
-                    notifications: {
-                        error: e.message
-                    }
+                    notifications: e.message
+
                 }
 
                 dispatch(action)
                 return e.message
             })
 
+}
+
+export const setLogOut = (purge, history) => {
+    return dispatch => {
+        purge()
+            .then(() => {
+                const action = {
+                    type: SET_NOTIFICATIONS,
+                    notifications: 'You have been successfully logged out.'
+                }
+                dispatch(action)
+                history.replace('/login')
+            })
+
+    }
 }
 
 export const setPasswordRecovery = (form, history) => {
@@ -87,9 +99,8 @@ export const setPasswordRecovery = (form, history) => {
             .catch((e) => {
                 const action = {
                     type: SET_NOTIFICATIONS,
-                    notifications: {
-                        error: e.message
-                    }
+                    notifications: e.message
+
                 }
 
                 dispatch(action)
