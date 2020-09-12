@@ -19,7 +19,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { mainListItems, secondaryListItems } from '../dashboard/listItems'
+import { ListItems } from '../dashboard/listItems'
 import BannerLogo from '../../assets/images/sice-logo.png'
 
 import Copyright from '../common/Copyright'
@@ -35,6 +35,7 @@ import { useAccount } from '../../hooks/user'
 const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [selected, setSelected] = React.useState('Reports');
   const [aside, setAside] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -107,9 +108,13 @@ const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
                 </IconButton>
             </div>
             <Divider />
-            <List>{mainListItems}</List>
+            <List>
+            <ListItems onChange={setSelected} selected={selected} history={history} items={['Dashboard', 'Cheqs', 'Conciliation', 'Lorem']} />
+            </List>
             <Divider />
-            <List>{secondaryListItems}</List>
+            <List>
+            <ListItems onChange={setSelected} selected={selected} items={['Reports']} />
+            </List>
         </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

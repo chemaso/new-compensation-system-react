@@ -2,7 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
@@ -59,7 +58,7 @@ const MasterLayoutAside = ({ user, open, onAsideOpen, onLogOut }) => {
       <Divider style={{ marginBottom: 20}} />
     </div>
   );
-
+  const [firstName, lastName] = user.name.split(" ")
   return (
         <React.Fragment>
           <Drawer
@@ -69,8 +68,9 @@ const MasterLayoutAside = ({ user, open, onAsideOpen, onLogOut }) => {
           >
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
             <Avatar style={{ width: 80, height: 80, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)' }} >
-                <Typography style={{ fontSize: 20 }}>
-                    J
+                <Typography style={{ fontSize: 30 }}>
+                    {firstName.substring(0, 1).toUpperCase()}
+                    {lastName.substring(0, 1).toUpperCase()}
                 </Typography>
             </Avatar>
             </div>
