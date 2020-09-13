@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { isEmpty } from 'lodash'
 import ListItem from '@material-ui/core/ListItem';
 import { isNil } from 'lodash'
-
-import {
-  useLocation
-} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';;
+import List from '@material-ui/core/List';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import Collapse from '@material-ui/core/Collapse';
 import LayersIcon from '@material-ui/icons/Layers';
@@ -70,7 +67,7 @@ export const ListItems = ({ items, history }) => {
       history.replace(route)
     }
   }
-  console.log(selected, subSelected)
+
   return (
     <div>
       {items.map((item) => {
