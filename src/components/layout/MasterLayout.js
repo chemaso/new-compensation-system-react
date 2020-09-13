@@ -10,11 +10,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import SearchInput from '../common/SearchInput'
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
@@ -28,11 +25,12 @@ import { PersistorContext } from '../../context/persistorContext'
 import { useHistory } from "react-router-dom";
 import { useStyles } from './masterLayoutStyles'
 import MasterLayoutBanner from './MasterLayoutComponents/MLBanner'
+import { MenuSkeleton } from '../common/Skeletons'
 import MasterLayoutAside from './MasterLayoutComponents/MLAside'
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useAccount } from '../../hooks/user'
 
-const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
+const MasterLayout = ({ children, render, logOut, account, loading, menuItems, ...rest }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selected, setSelected] = React.useState('Reports');
@@ -67,12 +65,9 @@ const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
       <>
         <Divider />
         <List>
-          <ListItems onChange={setSelected} selected={selected} history={history} items={['Dashboard', 'Cheqs', 'Conciliation', 'Lorem']} />
+          <ListItems onChange={setSelected} selected={selected} history={history} items={menuItems} />
         </List>
         <Divider />
-        <List>
-          <ListItems onChange={setSelected} selected={selected} items={['Reports']} />
-        </List>
       </>
     )
   }
@@ -95,18 +90,8 @@ const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
                   <MenuIcon style={{ color: '#f17f2d' }} />
                 </IconButton>
               </Grid>
-              <Grid item>
-                {!isMobile && <SearchInput open={open} />}
-              </Grid>
             </Grid>
             <Grid container justify='flex-end'>
-              <Grid item>
-                <IconButton color="inherit">
-                  <Badge badgeContent={4} color="secondary">
-                    <NotificationsIcon style={{ color: 'grey' }} />
-                  </Badge>
-                </IconButton>
-              </Grid>
               <Grid item>
                 <IconButton onClick={handleAsideOpen} color="inherit">
                   <AccountCircleIcon style={{ color: 'grey' }} />
@@ -130,7 +115,7 @@ const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
               <ChevronLeftIcon style={{ color: '#f17f2d' }} />
             </IconButton>
           </div>
-          <MenuItems />
+         {!loading ? <MenuItems /> : <MenuSkeleton items={6} />}
         </Drawer>)}
       {isMobile && (
          <Drawer
@@ -141,17 +126,15 @@ const MasterLayout = ({ children, render, logOut, account, ...rest }) => {
          onClose={() => setOpen(false)}
          open={open}
        >
-        <MenuItems />
+       {!loading ? <MenuItems /> : <MenuSkeleton items={6} />}
        </Drawer>
       )}
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <MasterLayoutBanner classes={classes} isMobile={isMobile} />
+        <MasterLayoutBanner classes={classes} items={menuItems} isMobile={isMobile} loading={loading} />
         <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            {render({
-              user
-            })}
+        <Grid container style={{ margin: '5px 15px' }}>
+            {render({ user })}
           </Grid>
           <Box pt={4}>
             <Copyright />
