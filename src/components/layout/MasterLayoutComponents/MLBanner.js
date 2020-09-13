@@ -1,35 +1,57 @@
 import React, { useState, useEffect } from 'react';
+
+import { isNil } from 'lodash'
+
+import {
+  useLocation
+} from "react-router-dom";
+
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import { MenuSkeleton } from '../../common/Skeletons'
+import { MasterLayoutBreadcrumbs as Breadcrumbs } from '../../common/Breadcrumbs'
 
-const MasterLayoutBanner = ({ title = 'Lorem Integrations - Order #129882', isMobile }) => {
+const MasterLayoutBanner = ({ items, isMobile, loading }) => {
   const [open, setOpen] = useState(true)
   useEffect(() => {
     if (isMobile) {
       setOpen(false)
     }
   }, [isMobile])
+  const { pathname } = useLocation()
+  const [levels] = items
+    .map((val) => {
+      const current = val.route === pathname
+      if (!current) {
+        const subRoute = val.subcontent.find(item => item.route === pathname)
+        if (isNil(subRoute)) {
+          return false
+        }
+        return [val, subRoute]
+      }
+      return [val]
+    })
+    .filter((item) => item)
+  const titleVal = levels.map((val) => val.title).toString().replace(',', ' - ')
   return (
         <Grid container alignItems='center' justify='space-between' style={{ color: 'white', paddingLeft: open ? 30 : 10, height: open ? 80 : 40, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)'}}>
-         <Grid item>
+         {!loading ? <Grid item>
           <Grid container alignItems='center'>  
             {open && <NotificationsIcon fontSize="large" />}
             <div>
-              <Typography variant={open ? "h6" : 'subtle1'} style={{ paddingLeft: 20, fontWeight: 'bold'}}>
-                {title}
-                </Typography>
-                {open && <Typography variant="caption" style={{ paddingLeft: 20 }}>
-                lorem ipsu dolor sitem is at em
-              </Typography>}
+              {open && <Typography variant={open ? "h6" : 'subtitle2'} style={{ paddingLeft: 20, fontWeight: 'bold'}}>
+                {titleVal}
+                </Typography>}
+                <Breadcrumbs levels={levels} />
             </div>
           </Grid>
-         </Grid>
+         </Grid>: <MenuSkeleton items={1} />}
          <Grid item>
-         {!isMobile && <IconButton onClick={() => setOpen(!open)}>
+         {!isMobile && <IconButton onClick={() => setOpen(!open)} style={{ padding: 9 }}>
            {open ? <ExpandLessIcon style={{ color: 'white'}} fontSize='large' /> : <ExpandMoreIcon style={{ color: 'white'}} fontSize='small' /> }
          </IconButton>}
          </Grid>
