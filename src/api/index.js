@@ -4,6 +4,10 @@ const error = 'http://demo1733049.mockable.io/unauthorized'
 const correct = 'http://demo1733049.mockable.io/login'
 const logup = 'http://demo1733049.mockable.io/logup'
 const passRecovery = 'http://demo1733049.mockable.io/recovery'
+const baseUrl = 'http://127.0.0.1:9998'
+
+export const getToken = (payload) => axios.post(`${baseUrl}/oauth/token`, { params: { grant_type: 'password', ...payload }})
+
 
 export const getLogin = (payload) => {
     let url = error

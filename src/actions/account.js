@@ -1,4 +1,5 @@
-import { getLogin, postSignUp, postPasswordRecovery } from '../api'
+import moment from 'moment'
+import { getLogin, postSignUp, postPasswordRecovery, getToken } from '../api'
 import { SET_NOTIFICATIONS, SET_LOGGED_IN } from '../actionTypes'
 import { useAccount } from '../hooks/user'
 
@@ -6,8 +7,13 @@ export const setLoggedIn = (account, history) => {
     return (dispatch) =>
         getLogin(account)
             .then(({ data }) => {
+                getToken(data).then(({ data:response }) => console.log(response) ).catch((e) => console.log(e))
                 const { encrypt } = useAccount()
-                const encrypted = encrypt(data)
+                const payload = {
+                    ...data,
+                    expires: moment().add(data.expires, 'seconds').format()
+                }
+                const encrypted = encrypt(payload)
                 const action = {
                     type: SET_LOGGED_IN,
                     account: encrypted
@@ -77,6 +83,20 @@ export const setLogOut = (purge, history) => {
                 }
                 dispatch(action)
                 history.replace('/login')
+            })
+
+    }
+}
+
+export const setExpiredSession = (purge, history) => {
+    return dispatch => {
+        purge()
+            .then(() => {
+                const action = {
+                    type: SET_NOTIFICATIONS,
+                    notifications: 'You session have been expired, please log in again to continue.'
+                }
+                dispatch(action)
             })
 
     }

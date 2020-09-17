@@ -55,7 +55,8 @@ export const ListItems = ({ items, history }) => {
       return
     }
     setSelected(titleVal[0])
-  }, [items])
+    setSubSelected('')
+  }, [items, pathname])
   const onChange = (value, { section, route }) => {
     if (section === 'title') {
       setSubSelected('')
@@ -86,7 +87,6 @@ export const ListItems = ({ items, history }) => {
             {!isEmpty(item.subcontent) && (
               item.subcontent.map(val => {
                 const isSubSelected = val.title === subSelected
-                console.log(isSelected, isSubSelected)
                 return (
                 <Collapse key={val.title} in={isSelected || isSubSelected} timeout="auto">
                   <List component="div" disablePadding>

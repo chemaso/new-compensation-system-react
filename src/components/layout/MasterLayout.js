@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import clsx from 'clsx';
+import moment from 'moment';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Box from '@material-ui/core/Box';
@@ -35,6 +36,10 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems, .
   const [open, setOpen] = React.useState(true);
   const [selected, setSelected] = React.useState('Reports');
   const [aside, setAside] = React.useState(false);
+
+  const { decrypt } = useAccount()
+  const user = decrypt(account)
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -48,8 +53,6 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems, .
       setOpen(aside)
     }
   }
-  const { decrypt } = useAccount()
-  const user = decrypt(account)
   const history = useHistory()
   const { purge } = useContext(PersistorContext)
   const theme = useTheme()

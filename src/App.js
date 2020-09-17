@@ -7,11 +7,13 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import RoutesGenerator from './router'
 import { PersistGate } from 'redux-persist/integration/react'
 import { PersistorContext } from './context/persistorContext'
+
 import { theme } from './theme'
 import './App.css'
 
 function App() {
   const { store, persistor } = configStore()
+
   return (
     <Provider store={store}>
       <PersistGate
@@ -20,7 +22,7 @@ function App() {
         <ThemeProvider theme={theme} >
           <CssBaseline />
           <PersistorContext.Provider value={persistor}>
-            <RoutesGenerator />
+              <RoutesGenerator />
           </PersistorContext.Provider>
         </ThemeProvider>
       </PersistGate>
