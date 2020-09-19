@@ -32,11 +32,10 @@ export const ListItems = ({ items, history }) => {
   const [subSelected, setSubSelected] = useState('')
   const { pathname } = useLocation()
 
-  const [levels] = items
-    .map((val) => {
+  const [levels] = items?.map((val) => {
       const current = val.route === pathname
       if (!current) {
-        const subRoute = val.subcontent.find(item => item.route === pathname)
+        const subRoute = val.subcontent.find(item => pathname.indexOf(item.route) !== -1)
         if (isNil(subRoute)) {
           return false
         }
@@ -46,10 +45,10 @@ export const ListItems = ({ items, history }) => {
     })
     .filter((item) => item)
 
-  const titleVal = levels.map((val) => val.title)
+  const titleVal = levels?.map((val) => val.title)
 
   useEffect(() => {
-    if (titleVal.length > 1) {
+    if (titleVal?.length > 1) {
       setSelected('')
       setSubSelected(titleVal[1])
       return
@@ -71,7 +70,7 @@ export const ListItems = ({ items, history }) => {
 
   return (
     <div>
-      {items.map((item) => {
+      {items?.map((item) => {
         const isSelected = selected === item.title
         return (
           <>

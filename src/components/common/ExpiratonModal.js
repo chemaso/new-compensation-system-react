@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function ExpirationModal({ open, handleModal, time, counter }) {
+export default function ExpirationModal({ open, handleModal, time }) {
 
   return (
     <div>
@@ -18,7 +18,7 @@ export default function ExpirationModal({ open, handleModal, time, counter }) {
         <DialogTitle id="responsive-dialog-title">{"Session Expire Warning"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Your session will expire in {counter} seconds. Do you want to extend the session?.
+            Your session will expire in {time} seconds. Do you want to extend the session?.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

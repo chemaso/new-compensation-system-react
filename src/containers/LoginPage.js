@@ -19,7 +19,7 @@ const LoginPage = ({ getLogin, history, match }) => {
       [e.target.name]: e.target.value,
     })
   }
-  const required = ['email', 'password']
+  const required = ['userName', 'password']
   const { validator } = useErrorValidator(formValues, required)
 
   const handleSubmit = () => {

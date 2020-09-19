@@ -8,7 +8,8 @@ const notifications = (state = initialState, action) => {
       case SET_NOTIFICATIONS:
         return {
           ...initialState,
-          values: action.notifications
+          values: action.notifications,
+          severity: action.severity
         }
       default:
         return state

@@ -15,7 +15,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import { MenuSkeleton } from '../../common/Skeletons'
 import { MasterLayoutBreadcrumbs as Breadcrumbs } from '../../common/Breadcrumbs'
 
-const MasterLayoutBanner = ({ items, isMobile, loading }) => {
+const MasterLayoutBanner = ({ items = [], isMobile, loading }) => {
   const [open, setOpen] = useState(true)
   useEffect(() => {
     if (isMobile) {
@@ -23,11 +23,10 @@ const MasterLayoutBanner = ({ items, isMobile, loading }) => {
     }
   }, [isMobile])
   const { pathname } = useLocation()
-  const [levels] = items
-    .map((val) => {
+  const [levels] = items?.map((val) => {
       const current = val.route === pathname
       if (!current) {
-        const subRoute = val.subcontent.find(item => item.route === pathname)
+        const subRoute = val.subcontent.find(item => pathname.indexOf(item.route) !== -1)
         if (isNil(subRoute)) {
           return false
         }
@@ -36,7 +35,7 @@ const MasterLayoutBanner = ({ items, isMobile, loading }) => {
       return [val]
     })
     .filter((item) => item)
-  const titleVal = levels.map((val) => val.title).toString().replace(',', ' - ')
+  const titleVal = levels?.map((val) => val.title).toString().replace(',', ' - ')
   return (
         <Grid container alignItems='center' justify='space-between' style={{ color: 'white', paddingLeft: open ? 30 : 10, height: open ? 80 : 40, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)'}}>
          {!loading ? <Grid item>

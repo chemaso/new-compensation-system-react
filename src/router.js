@@ -46,12 +46,13 @@ const PrivateRoute = ({ children, ...rest }) => {
 export default function RoutesGenerator() {
   const notifications = useSelector(state => get(state, 'notifications', {}))
   const dispatch = useDispatch()
+  console.log(notifications)
   return (
     <Router>
       <Switch>
         <Route path="/login" component={LoginPage} />
-        <Route path="/sign-up" component={SignUpPage} />
-        <Route path="/forgot-password" component={PasswordRecoveryPage} />
+       {/* <Route path="/sign-up" component={SignUpPage} />
+           <Route path="/forgot-password" component={PasswordRecoveryPage} /> */}
         <PrivateRoute path="/">
           <DashboardPage />
         </PrivateRoute>
@@ -60,8 +61,10 @@ export default function RoutesGenerator() {
         open={!isEmpty(notifications.values)}
         onClose={() => dispatch({
           type: 'SET_NOTIFICATIONS',
-          notifications: ''
+          notifications: '',
+          severity: 'info'
         })}
+        severity={notifications.severity}
         message={notifications.values}
       />
       <SessionWrapper />

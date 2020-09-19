@@ -1,4 +1,4 @@
-import { SET_LOGGED_IN } from '../actionTypes'
+import { SET_LOGGED_IN, SET_EXPIRED_SESSION } from '../actionTypes'
 
 const initialState = {
     user: {},
@@ -6,6 +6,11 @@ const initialState = {
 const account = (state = initialState, action) => {
     switch (action.type) {
       case SET_LOGGED_IN:
+        return {
+          ...initialState,
+          user: action.account
+        }
+      case SET_EXPIRED_SESSION:
         return {
           ...initialState,
           user: action.account

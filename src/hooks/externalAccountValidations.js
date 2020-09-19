@@ -21,7 +21,7 @@ export const useErrorValidator = (formValues, required) => {
                   }
                   return ''
                 }
-                if (str.length < 8) {
+                if (str.length < 3) {
                   errorsObject = {
                     ...errorsObject,
                     [item]: 'Password must have at least 8 characters.'
@@ -51,6 +51,14 @@ export const useErrorValidator = (formValues, required) => {
                   errorsObject = {
                     ...errorsObject,
                     [item]: 'First Name is required.'
+                  }
+                }
+              }
+              if (item === 'username' || item === 'userName') {
+                if (isEmpty(str)) {
+                  errorsObject = {
+                    ...errorsObject,
+                    [item]: 'Username is required.'
                   }
                 }
               }

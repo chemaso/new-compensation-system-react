@@ -1,20 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { get, isEmpty } from 'lodash'
-import { useHistory } from "react-router-dom";
+import { get, isEmpty, isNil } from 'lodash'
+import { useHistory, useLocation } from "react-router-dom";
 import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '../../hooks/user'
-import {setExpiredSession} from '../../actions/account'
+import { setExpiredSession } from '../../actions/account'
 import ExpirationModal from '../common/ExpiratonModal'
-import { PersistorContext } from '../../context/persistorContext'
 
 export const SessionWrapper = ({ children }) => {
-    const [counter, setCounter] = useState(time)
+  const [counter, setCounter] = useState('')
     const history = useHistory()
-    const { purge } = useContext(PersistorContext)
-    console.log(purge, history)
     const [open, setOpen] = useState(false)
     const dispatch = useDispatch()
+    const location = useLocation()
     let user = useSelector(state => get(state, 'account.user', '{}'))
     const isAuth = !isEmpty(user)
     const { decrypt } = useAccount()
@@ -24,20 +22,36 @@ export const SessionWrapper = ({ children }) => {
 
     useEffect(() => {
         const current = moment()
-        const expiresIn = (moment(user.expires).diff(current, 'seconds') - 60) * 1000 
-        //const isExpired = moment(user.expires).unix() < current.unix()
-        if (!isEmpty(user)) {
+
+        // If is null the expires will be far enought to not show the modal
+  
+        const expiresValue = isNil(user.expires) ? moment().endOf('year').format() : user.expires
+
+        const expiresIn = (moment(expiresValue).diff(current, 'seconds') - 60) * 1000 
+        const isExpired = moment(expiresValue).unix() < current.unix()
+
+        // Set the initial count down value
+        setCounter(moment(expiresValue).diff(current, 'seconds')) 
+
+        // Set expiration modal
+
+        if (!isNil(user.id) && !open) {
             setTimeout(() => setOpen(true), expiresIn)
+        }
+
+        // Purge session an return to login
+
+        if (open && isExpired) {
+          dispatch(setExpiredSession(setOpen))
         }
     }, [user])
 
-    const current = moment()
-    const time = moment(user.expires).diff(current, 'seconds')
-
     useEffect(() => {
-      counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
-    }, [counter])
+      if (open && counter > 0) {
+        setTimeout(() => setCounter(counter - 1), 1000);
+      }
+    }, [counter, open])
     return (
-        <ExpirationModal time={time} open={open} handleModal={setOpen} />
+        <ExpirationModal time={counter} open={open} handleModal={setOpen} />
     )
 }

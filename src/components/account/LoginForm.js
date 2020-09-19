@@ -36,15 +36,15 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
   return (
     <form onChange={onChange} className={classes.form} noValidate>
       <TextField
-        error={!isNil(errors['email'])}
-        helperText={errors['email']}
+        error={!isNil(errors['userName'])}
+        helperText={errors['userName']}
         margin="normal"
         required
         fullWidth
-        id="email"
-        label="Email Address"
-        name="email"
-        autoComplete="email"
+        id="userName"
+        label="Username"
+        name="userName"
+        autoComplete="userName"
         autoFocus
       />
       <TextField
@@ -59,10 +59,6 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
         id="password"
         autoComplete="current-password"
       />
-      <FormControlLabel
-        control={<Checkbox value="remember" color="primary" />}
-        label="Remember me"
-      />
       <CButton
         onClick={onSubmit}
         loading={loading}
@@ -74,18 +70,6 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
       >
         Sign In
             </CButton>
-      <Grid container justify="space-between">
-        <Grid item xs={12} md={6}>
-          <Link to="forgot-password" className={classes.link}>
-            Forgot password?
-                </Link>
-        </Grid>
-        <Grid item>
-          <Link to="sign-up" className={classes.link}>
-            {"Don't have an account? Sign Up"}
-          </Link>
-        </Grid>
-      </Grid>
       <Box mt={5}>
         <Copyright />
       </Box>

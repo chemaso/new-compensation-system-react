@@ -46,19 +46,19 @@ const MasterLayoutAside = ({ user, open, onAsideOpen, onLogOut }) => {
       onKeyDown={toggleDrawer()}
     >
       <List>
-        {["User Profile", "Settings"].map((text, index) => (
+        {/* ["User Profile", "Settings"].map((text, index) => (
           <ListItem button key={text}>
             <ListItemIcon>
               {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
             </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
-        ))}
+        ))*/}
       </List>
       <Divider style={{ marginBottom: 20}} />
     </div>
   );
-  const [firstName, lastName] = user.name.split(" ")
+  
   return (
         <React.Fragment>
           <Drawer
@@ -69,12 +69,12 @@ const MasterLayoutAside = ({ user, open, onAsideOpen, onLogOut }) => {
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
             <Avatar style={{ width: 80, height: 80, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)' }} >
                 <Typography style={{ fontSize: 30 }}>
-                    {firstName.substring(0, 1).toUpperCase()}
-                    {lastName.substring(0, 1).toUpperCase()}
+                    {user.username.substring(0, 1).toUpperCase()}
+                    {user.username.substring(1, 2).toUpperCase()}
                 </Typography>
             </Avatar>
             </div>
-            <Typography style={{ fontWeight: 'bold', textAlign: 'center',  marginTop: 10 }}>Welcome, {user.name}.</Typography>
+            <Typography style={{ fontWeight: 'bold', textAlign: 'center',  marginTop: 10 }}>Welcome, {user.username}.</Typography>
             {list('right')}
             <CButton
                 onClick={onLogOut}

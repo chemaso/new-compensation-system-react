@@ -4,7 +4,7 @@ import moment from 'moment';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Box from '@material-ui/core/Box';
-import { get } from 'lodash'
+import { get, groupBy, isEmpty, uniqBy } from 'lodash'
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
@@ -30,16 +30,17 @@ import { MenuSkeleton } from '../common/Skeletons'
 import MasterLayoutAside from './MasterLayoutComponents/MLAside'
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useAccount } from '../../hooks/user'
+import { useMenuItems } from '../../hooks/menu'
 
-const MasterLayout = ({ children, render, logOut, account, loading, menuItems, ...rest }) => {
+const MasterLayout = ({ children, render, logOut, account, loading, menuItems: menut, ...rest }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selected, setSelected] = React.useState('Reports');
   const [aside, setAside] = React.useState(false);
 
   const { decrypt } = useAccount()
+  const { generate } = useMenuItems()
   const user = decrypt(account)
-  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -63,12 +64,14 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems, .
     }
   }, [isMobile])
 
+  const menuItems = generate(user) || []
+
   const MenuItems = () => {
     return (
       <>
         <Divider />
         <List>
-          <ListItems onChange={setSelected} selected={selected} history={history} items={menuItems} />
+          <ListItems onChange={setSelected} selected={selected} history={history}  items={menuItems} />
         </List>
         <Divider />
       </>
