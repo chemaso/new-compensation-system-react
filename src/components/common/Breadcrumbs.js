@@ -26,7 +26,8 @@ const StyledBreadcrumb = withStyles((theme) => ({
 export const MasterLayoutBreadcrumbs = ({ levels = [] }) => {
   const history = useHistory()
   const handleClick = (value) => {
-    history.replace(value)
+    const path = value.charAt(0) === '/' ? value : `/${value}`
+    history.replace(path)
   }
   return (
     <Breadcrumbs separator={<span style={{ color: 'white'}}>/</span>} aria-label="breadcrumb" style={{ marginLeft: 20 }}>
