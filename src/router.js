@@ -11,8 +11,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from './hooks/user'
 import LoginPage from './containers/LoginPage'
 import PasswordRecoveryPage from './containers/PasswordRecoveryPage'
-import SignUpPage from './containers/SignUpPage'
 import DashboardPage from './containers/DashboardPage'
+import AddUser from './containers/security/AddUser'
+import EditUser from './containers/security/EditUser'
+import User from './containers/security/User'
+import Security from './containers/security/Security'
 import Notifications from './components/common/Notifications'
 import { SessionWrapper } from './components/layout/SessionWrapper'
 
@@ -23,20 +26,35 @@ const PrivateRoute = ({ children, ...rest }) => {
   if (isAuth) {
     user = decrypt(user)
   }
+
   return (
     <Route
       {...rest}
       render={({ location }) => {
-        return (isAuth) ? (
-          children
-        ) : (
-            <Redirect
-              to={{
-                pathname: "/login",
-                state: { from: location }
-              }}
-            />
-          )
+          switch (true) {
+            case (isAuth && !user?.changePassword):
+              return children
+            case (isAuth && user?.changePassword):
+              return (
+                <Redirect
+                to={{
+                  pathname: "/reset-password",
+                  state: { from: location }
+                }}
+              />
+              )
+            case !isAuth:
+              return (
+                <Redirect
+                to={{
+                  pathname: "/login",
+                  state: { from: location }
+                }}
+              />
+              )
+            default:
+              break;
+          }
       }
       }
     />
@@ -46,13 +64,23 @@ const PrivateRoute = ({ children, ...rest }) => {
 export default function RoutesGenerator() {
   const notifications = useSelector(state => get(state, 'notifications', {}))
   const dispatch = useDispatch()
-  console.log(notifications)
   return (
     <Router>
       <Switch>
         <Route path="/login" component={LoginPage} />
-       {/* <Route path="/sign-up" component={SignUpPage} />
-           <Route path="/forgot-password" component={PasswordRecoveryPage} /> */}
+        <Route path="/reset-password" component={PasswordRecoveryPage} />
+        <PrivateRoute path="/security/user/index/add">
+          <AddUser />
+        </PrivateRoute>
+        <PrivateRoute path="/security/user/index/:id">
+          <EditUser />
+        </PrivateRoute>
+        <PrivateRoute path="/security/user/index">
+          <User />
+        </PrivateRoute>
+        <PrivateRoute path="/security">
+          <Security />
+        </PrivateRoute>
         <PrivateRoute path="/">
           <DashboardPage />
         </PrivateRoute>
