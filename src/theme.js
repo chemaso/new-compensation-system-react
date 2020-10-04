@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles'
 
-const fonts = "'Lato', 'Rubik', sans-serif";
+const fonts = "'Lato', 'Poppins', sans-serif";
 
 export const theme = createMuiTheme({
   typography: {
