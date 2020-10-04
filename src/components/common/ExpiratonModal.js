@@ -22,10 +22,10 @@ export default function ExpirationModal({ open, handleModal, time }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button style={{ fontWeight: 'bold'}} onClick={() => handleModal(false)} color="default">
+          <Button disabled={time <= 0} style={{ fontWeight: 'bold'}} onClick={() => handleModal('out')} color="default">
             Log Out
           </Button>
-          <Button style={{ fontWeight: 'bold', color: '#ff600d'}} onClick={() => handleModal(false)}>
+          <Button disabled={time <= 0} style={{ fontWeight: 'bold', color: '#ff600d'}} onClick={() => handleModal('continue')}>
             Continue
           </Button>
         </DialogActions>

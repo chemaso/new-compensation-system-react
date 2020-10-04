@@ -24,11 +24,11 @@ export const SessionWrapper = ({ children }) => {
         const current = moment()
 
         // If is null the expires will be far enought to not show the modal
-  
+        
         const expiresValue = isNil(user.expires) ? moment().endOf('year').format() : user.expires
 
         const expiresIn = (moment(expiresValue).diff(current, 'seconds') - 60) * 1000 
-        const isExpired = moment(expiresValue).unix() < current.unix()
+        const isExpired = moment(expiresValue).unix() <= current.unix()
 
         // Set the initial count down value
         setCounter(moment(expiresValue).diff(current, 'seconds')) 
@@ -51,7 +51,15 @@ export const SessionWrapper = ({ children }) => {
         setTimeout(() => setCounter(counter - 1), 1000);
       }
     }, [counter, open])
+    const handleModal = (value) => {
+      if (value === 'out') {
+        dispatch(setExpiredSession(setOpen))
+      }
+      if (value === 'continue') {
+        //dispatch the token renewer
+      }
+    }
     return (
-        <ExpirationModal time={counter} open={open} handleModal={setOpen} />
+        <ExpirationModal time={counter} open={open} handleModal={handleModal} />
     )
 }
