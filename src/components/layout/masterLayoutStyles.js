@@ -77,8 +77,10 @@ export const useStyles = makeStyles((theme) => ({
       bacground: '#E8ECEF',
     },
     container: {
-      paddingTop: theme.spacing(4),
+      paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(4),
+      minHeight: '76%',
+      position: 'relative',
     },
     paper: {
       padding: theme.spacing(2),

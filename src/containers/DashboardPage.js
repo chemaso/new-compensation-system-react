@@ -4,37 +4,29 @@ import { bindActionCreators } from 'redux'
 import { setLogOut } from '../actions/account'
 import MasterLayout from '../components/layout/MasterLayout'
 import {DashboardSkeleton} from '../components/common/Skeletons'
+import CommonCard from '../components/common/CommonCards'
+import { Grid, Typography } from '@material-ui/core';
 
 const DashboardPage = ({ children, logOut, ...rest }) => {
-  const items = [
-    {
-      title: 'Dashboard',
-      route: '/',
-      subcontent: []
-    },
-    {
-      title: 'Queries',
-      route: '/queries',
-      subcontent: [{ title:'Management', route: '/queries/management'}, { title:'Access', route: '/queries/access'}]
-    },
-    {
-      title: 'Users',
-      route: '/users',
-      subcontent: [{ title:'Users Management', route: '/users/management'}, { title:'Users Access', route: '/users/access'}]
-    }
-  ]
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 2000)
-  }, [])
+  const [loading, setLoading] = useState(false)
+  
   return (
     <MasterLayout 
       loading={loading}
-      menuItems={items}
       render={
-        ({ user }) => (
-            <DashboardSkeleton items={5}/>
-        )} 
+        ({ user, menuItems, history }) => {
+          const items = menuItems?.filter((item) => item.route !== '/')
+          return (
+          loading ?
+            <DashboardSkeleton items={5}/> :
+            <Grid container style={{ marginRight: 40}}>
+            {items.map((item, index) => (
+              <Grid key={index} item xs={6} style={{ marginBottom: 20 }} >
+                <CommonCard item={item} index={index} history={history} />
+              </Grid>
+            ))}
+            </Grid>
+        )}} 
        />
   );
 }

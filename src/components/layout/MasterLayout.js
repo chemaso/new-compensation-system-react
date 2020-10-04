@@ -140,11 +140,8 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems: m
         <MasterLayoutBanner classes={classes} items={menuItems} isMobile={isMobile} loading={loading} />
         <Container maxWidth="lg" className={classes.container}>
         <Grid container style={{ margin: '5px 15px' }}>
-            {render({ user })}
+            {render({ user, menuItems, history })}
           </Grid>
-          <Box pt={4}>
-            <Copyright />
-          </Box>
         </Container>
       </main>
       <MasterLayoutAside user={user} open={aside} onAsideOpen={handleAsideOpen} onLogOut={() => logOut(purge, history)} />
