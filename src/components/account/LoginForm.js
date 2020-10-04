@@ -3,6 +3,7 @@ import isNil from 'lodash/isNil'
 import CButton from '../common/ButtonWithLoading';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputPassword from '../common/InputPassword'
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -47,7 +48,7 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
         autoComplete="userName"
         autoFocus
       />
-      <TextField
+      <InputPassword
         error={!isNil(errors['password'])}
         helperText={errors['password']}
         margin="normal"
@@ -55,7 +56,6 @@ const LoginForm = ({ onChange, loading, errors, onSubmit }) => {
         fullWidth
         name="password"
         label="Password"
-        type="password"
         id="password"
         autoComplete="current-password"
       />

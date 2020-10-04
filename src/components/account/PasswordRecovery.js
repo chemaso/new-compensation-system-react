@@ -3,12 +3,14 @@ import CButton from '../common/ButtonWithLoading';
 import isNil from 'lodash/isNil'
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
+import InputPassword from '../common/InputPassword';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Link,
 } from "react-router-dom";
 import Copyright from '../common/Copyright'
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -28,45 +30,59 @@ const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
     const classes = useStyles();
 
     return (
+        <>
+        <Typography variant='h6'>To continue please reset your password:</Typography>
         <form onChange={onChange} className={classes.form} noValidate>
-            <TextField
-                error={!isNil(errors['email'])}
-                helperText={errors['email']}
+            <InputPassword
+                error={!isNil(errors['password'])}
+                helperText={errors['password']}
+                margin="normal"
+                required
+                fullWidth  
+                id="password"
+                label="New Password"
+                name="password"
+                autoComplete="password"
+                autoFocus
+            />
+            <InputPassword
+                error={!isNil(errors['repeat-password'])}
+                helperText={errors['repeat-password']}
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
+                id="repeat-password"
+                label="Repeat Password"
+                name="repeat-password"
+                autoComplete="repeat-password"
+    
             />
+            <Grid container>
             <CButton
                 onClick={onSubmit}
+                style={{ background: 'grey'}}
                 loading={loading}
-                fullWidth
                 variant="contained"
                 color="myBtn"
                 className={classes.submit}
             >
-                Recover Password
+                Cancel
             </CButton>
-            <Grid container justify="space-between">
-                <Grid item xs={12} md={6}>
-                    <Link to="sign-up" className={classes.link}>
-                        {"Don't have an account? Sign Up"}
-                    </Link>
-                </Grid>
-                <Grid item>
-                    <Link to="login" className={classes.link}>
-                        {"Try with another password"}
-                    </Link>
-                </Grid>
+            <CButton
+                onClick={onSubmit}
+                loading={loading}
+                variant="contained"
+                color="myBtn"
+                className={classes.submit}
+            >
+                Reset Password
+            </CButton>
             </Grid>
             <Box mt={5}>
                 <Copyright />
             </Box>
         </form>
+        </>
 
     );
 }
