@@ -39,6 +39,7 @@ const AddRole = ({
   ...rest
 }) => {
   const [loading, setLoading] = useState(false);
+  const [values, setValues] = useState({});
   const params = useParams();
   const { decrypt } = useAccount();
   const user = decrypt(account?.user);
@@ -47,6 +48,10 @@ const AddRole = ({
     setPermissions(user?.token)
         .finally(()=> setLoading(false));
   }, []);
+
+  const handleForm = (v) => {
+    setValues(v)
+  }
 
   return (
     <>
@@ -64,7 +69,7 @@ const AddRole = ({
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm permissions={permissions} formInputs={formInputs} />
+                  <UserForm permissions={permissions} formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -72,7 +77,7 @@ const AddRole = ({
                 <Grid
                   container
                   justify="flex-end"
-                  style={{ marginTop: "20px", marginBottom: "0px" }}
+                  style={{ marginTop: "20px", marginBottom: "20px" }}
                 >
                   <Button
                     variant="contained"
@@ -90,7 +95,7 @@ const AddRole = ({
                       background:
                         "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                     }}
-                    //onClick={item.action}
+                    onClick={() => console.log('saving', values)}
                     color="default"
                   >
                     Save Changes

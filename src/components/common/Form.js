@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Grid, TextField, InputLabel } from "@material-ui/core";
 import MultiSelectBox from "./MultiSelectBox";
@@ -28,20 +28,33 @@ const options = [
   },
 ];
 
-const Form = ({ onChange, form, permissions, formInputs = [] }) => {
+const Form = ({ onChange, form = {}, permissions, formInputs = [] }) => {
+  const [proccesed, setProccesed] = useState({});
+
+  useEffect(() => {
+    setProccesed(form)
+  }, [])
+  const handleForm = (value, name) => {
+    setProccesed({
+      ...proccesed,
+      [name]: value,
+    });
+    onChange({
+      ...proccesed,
+      [name]: value,
+    })
+  };
   return (
     <>
       {formInputs.map((item) => {
         if (item.type === "treeview") {
           return (
             <Grid xs={12}>
-              <InputLabel
-                style={{ marginTop: 12, marginBottom: 12, color: "black" }}
-                htmlFor={item.id}
-              >
-                {item.label}
-              </InputLabel>
-              <TreeView permissions={permissions} onChange={(v) => console.log(v)} />
+              <TreeView
+                permissions={permissions}
+                item={item}
+                onChange={(v) => handleForm(v, item.id)}
+              />
             </Grid>
           );
         }
@@ -56,7 +69,7 @@ const Form = ({ onChange, form, permissions, formInputs = [] }) => {
               </InputLabel>
               <MultiSelectBox
                 options={options}
-                onChange={(e) => console.log(e)}
+                onChange={(v) => handleForm(v, item.id)}
               />
             </Grid>
           );
@@ -66,7 +79,7 @@ const Form = ({ onChange, form, permissions, formInputs = [] }) => {
             <CheckboxList
               options={options}
               item={item}
-              onChange={(e) => console.log(e)}
+              onChange={(v) => handleForm(v, item.id)}
             />
           );
         }
@@ -79,10 +92,15 @@ const Form = ({ onChange, form, permissions, formInputs = [] }) => {
               {item.label}
             </InputLabel>
             <TextField
-              style={{ marginTop: 5, background: "white" }}
+              style={{
+                marginTop: 5,
+                background: item.disabled ? "#ececec" : "white",
+              }}
               margin="normal"
               required
+              disabled={item.disabled}
               fullWidth
+              onChange={(v) => handleForm(v.target.value, item.id)}
               InputLabelProps={{
                 shrink: false,
               }}

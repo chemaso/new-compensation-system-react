@@ -50,18 +50,30 @@ const formInputs = [
 ];
 
 const EditUser = ({ children, logOut, ...rest }) => {
-  const [loading, setLoading] = useState(false);
-  const params = useParams();
 
+  const [values, setValues] = useState({ active: false });
+  const params = useParams();
+  const handleForm = (v) => {
+    setValues({
+      ...values,
+      ...v
+    })
+  }
+  const handleActive = (e) => {
+    setValues({
+      ...values,
+      active: e.target.checked
+    })
+  }
+
+  const checked = values?.active ? true : false
   return (
     <>
       <Helmet title="Edit User" />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
-          return loading ? (
-            <DataViewSkeleton />
-          ) : (
+          return (
             <Grid justify="space-between" container style={{ marginRight: 20 }}>
               <Grid item xs={12} style={{ marginBottom: 20 }}>
                 <Typography variant="h5">Edit User: #{params.id}</Typography>
@@ -78,15 +90,15 @@ const EditUser = ({ children, logOut, ...rest }) => {
                   <Grid item>No</Grid>
                   <Switch
                     id='active-user'
-                    //checked={state.checkedB}
-                    // onChange={handleChange}
+                    checked={checked}
+                    onChange={handleActive}
                     name="checkedB"
                     color="secondary"
                   />
                   <Grid item>Yes</Grid>
                 </Grid>
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm formInputs={formInputs} />
+                  <UserForm formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -94,7 +106,7 @@ const EditUser = ({ children, logOut, ...rest }) => {
                 <Grid
                   container
                   justify="flex-end"
-                  style={{ marginTop: "20px", marginBottom: "0px" }}
+                  style={{ marginTop: "20px", marginBottom: "20px" }}
                 >
                   <Button
                     variant="contained"
@@ -112,7 +124,7 @@ const EditUser = ({ children, logOut, ...rest }) => {
                       background:
                         "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                     }}
-                    //onClick={item.action}
+                    onClick={() => console.log('saving', values)}
                     color="default"
                   >
                     Save Changes

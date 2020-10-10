@@ -14,6 +14,12 @@ import Helmet from "../../../components/common/Helmet";
 
 const formInputs = [
   {
+    label: "ID",
+    id: "id",
+    disabled: true,
+    maxLength: 100,
+  },
+  {
     label: "Name",
     id: "name",
     maxLength: 100,
@@ -39,15 +45,21 @@ const EditRole = ({
   ...rest
 }) => {
   const [loading, setLoading] = useState(false);
+  const [values, setValues] = useState({});
   const params = useParams();
   const { decrypt } = useAccount();
+  
   const user = decrypt(account?.user);
+
   useEffect(() => {
     setLoading(true)
     setPermissions(user?.token)
         .finally(()=> setLoading(false));
   }, []);
 
+  const handleForm = (v) => {
+    setValues(v)
+  }
   return (
     <>
       <Helmet title="Add Role" />
@@ -64,7 +76,7 @@ const EditRole = ({
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm permissions={permissions} formInputs={formInputs} />
+                  <UserForm permissions={permissions} formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -72,7 +84,7 @@ const EditRole = ({
                 <Grid
                   container
                   justify="flex-end"
-                  style={{ marginTop: "20px", marginBottom: "0px" }}
+                  style={{ marginTop: "20px", marginBottom: "20px" }}
                 >
                   <Button
                     variant="contained"
@@ -90,7 +102,7 @@ const EditRole = ({
                       background:
                         "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                     }}
-                    //onClick={item.action}
+                    onClick={() => console.log('editing', values)}
                     color="default"
                   >
                     Save Changes

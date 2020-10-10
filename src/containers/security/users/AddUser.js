@@ -52,10 +52,13 @@ const formInputs = [
 
 const AddUser = ({ children, logOut, setPermissions, permissions, account, ...rest }) => {
   const [loading, setLoading] = useState(false);
+  const [values, setValues] = useState({});
   const params = useParams();
   const { decrypt } = useAccount()
   const user = decrypt(account?.user)
-
+  const handleForm = (v) => {
+    setValues(v)
+  }
   return (
     <>
     <Helmet title='Add User' />
@@ -72,7 +75,7 @@ const AddUser = ({ children, logOut, setPermissions, permissions, account, ...re
             <Grid style={{ minHeight: "85%" }} item xs={12}>
               <Divider />
               <Grid xs={10} container style={{ marginBottom: 20 }}>
-                <UserForm permissions={[]} formInputs={formInputs} />
+                <UserForm permissions={[]} formInputs={formInputs} onChange={handleForm} />
               </Grid>
             </Grid>
             <Grid item xs={12}>
@@ -80,7 +83,7 @@ const AddUser = ({ children, logOut, setPermissions, permissions, account, ...re
               <Grid
                 container
                 justify="flex-end"
-                style={{ marginTop: "20px", marginBottom: "0px" }}
+                style={{ marginTop: "20px", marginBottom: "20px" }}
               >
                 <Button
                   variant="contained"
@@ -98,7 +101,7 @@ const AddUser = ({ children, logOut, setPermissions, permissions, account, ...re
                     background:
                       "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                   }}
-                  //onClick={item.action}
+                  onClick={() => console.log('creating', values)}
                   color="default"
                 >
                   Save Changes

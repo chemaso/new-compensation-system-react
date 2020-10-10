@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 export default function CommonHelmet({ title }) {
   return (
     <Helmet>
-      <title>SICE | {title}</title>
+      <title>{title} | SICE</title>
     </Helmet>
   );
 }
