@@ -8,6 +8,7 @@ import { useErrorValidator } from '../hooks/externalAccountValidations'
 import PasswordRecovery from '../components/account/PasswordRecovery'
 import ExternalAccountWrapper from '../components/account/ExternalAccountWrapper'
 import { setPasswordRecovery } from '../actions/account'
+import Helmet from '../components/common/Helmet'
 
 const PasswordRecoveryPage = ({ getPasswordRecovery, history }) => {
   const [formValues, setFormValues] = useState({})
@@ -35,6 +36,7 @@ const PasswordRecoveryPage = ({ getPasswordRecovery, history }) => {
   }
   return (
     <ExternalAccountWrapper title='Welcome to SICE' >
+      <Helmet title="Reset Password" />
       <PasswordRecovery
         onChange={handleFormChange}
         onSubmit={handleSubmit}

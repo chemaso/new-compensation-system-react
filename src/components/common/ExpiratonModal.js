@@ -12,7 +12,6 @@ export default function ExpirationModal({ open, handleModal, time }) {
     <div>
       <Dialog
         open={open}
-        onClose={() => handleModal(false)}
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">{"Session Expire Warning"}</DialogTitle>

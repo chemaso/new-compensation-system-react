@@ -3,7 +3,6 @@ import { get, groupBy, isEmpty, uniqBy } from 'lodash'
 export const useMenuItems = () => {
     return {
         generate: (user) => {
-
             const codes = user.roles[0].permissions.map((item) => item.code)
 
             const subRouteGenerator = (val) => {

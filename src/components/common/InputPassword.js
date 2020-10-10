@@ -7,7 +7,7 @@ import { TextField } from "@material-ui/core";
 
 const InputPassword = ({ id, value, onChange, ...rest }) => {
   const [showP, showPassword] = useState(false);
-  console.log(showP)
+
   return (
     <TextField
       id={id}

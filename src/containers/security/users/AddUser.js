@@ -1,24 +1,64 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { getPermissions } from "../../../actions/permissions";
 import { useParams } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { setLogOut } from "../../actions/account";
-import MasterLayout from "../../components/layout/MasterLayout";
-import UserForm from "../../components/security/userForm";
-import { DataViewSkeleton } from "../../components/common/Skeletons";
+import { setLogOut } from "../../../actions/account";
+import MasterLayout from "../../../components/layout/MasterLayout";
+import UserForm from "../../../components/common/Form";
+import { DataViewSkeleton } from "../../../components/common/Skeletons";
 import {
   Grid,
   Typography,
   Button,
   Divider,
 } from "@material-ui/core";
+import { useAccount } from '../../../hooks/user'
 
-const AddUser = ({ children, logOut, ...rest }) => {
+import Helmet from '../../../components/common/Helmet'
+
+const formInputs = [
+  {
+    label: "Identification",
+    id: "identification",
+    maxLength: 20
+  },
+  {
+    label: "Login",
+    id: "login",
+    maxLength: 50
+  },
+  {
+    label: "Name",
+    id: "name",
+    maxLength: 100
+  },
+  {
+    label: "Email",
+    id: "email",
+    maxLength: 100
+  },
+  {
+    label: "Department",
+    id: "department",
+    type: "checkbox-list",
+  },
+  {
+    label: "Profile",
+    id: "profile",
+    type: "multiselect",
+  },
+];
+
+const AddUser = ({ children, logOut, setPermissions, permissions, account, ...rest }) => {
   const [loading, setLoading] = useState(false);
   const params = useParams();
-  console.log(params);
+  const { decrypt } = useAccount()
+  const user = decrypt(account?.user)
 
   return (
+    <>
+    <Helmet title='Add User' />
     <MasterLayout
       loading={false}
       render={({ user, menuItems, history }) => {
@@ -29,21 +69,23 @@ const AddUser = ({ children, logOut, ...rest }) => {
             <Grid item xs={12} style={{ marginBottom: 20 }}>
               <Typography variant="h5">Add New User:</Typography>
             </Grid>
-            <Grid style={{ minHeight: '100%'}} item xs={12}>
+            <Grid style={{ minHeight: "85%" }} item xs={12}>
               <Divider />
-              <Grid container style={{ marginBottom: 20}}>
-                <UserForm />
+              <Grid xs={10} container style={{ marginBottom: 20 }}>
+                <UserForm permissions={[]} formInputs={formInputs} />
               </Grid>
             </Grid>
             <Grid item xs={12}>
               <Divider />
-              <Grid container justify="flex-end" style={{ marginTop: "20px" }}>
+              <Grid
+                container
+                justify="flex-end"
+                style={{ marginTop: "20px", marginBottom: "0px" }}
+              >
                 <Button
                   variant="contained"
                   style={{ fontWeight: "bold", marginRight: 15 }}
-                  onClick={() =>
-                    history.replace('/security/user/index')
-                  }
+                  onClick={() => history.replace("/security/user/index")}
                   color="default"
                 >
                   Cancel
@@ -59,7 +101,7 @@ const AddUser = ({ children, logOut, ...rest }) => {
                   //onClick={item.action}
                   color="default"
                 >
-                  Save New User
+                  Save Changes
                 </Button>
               </Grid>
             </Grid>
@@ -67,20 +109,23 @@ const AddUser = ({ children, logOut, ...rest }) => {
         );
       }}
     />
+    </>
   );
 };
 
 const mapStateToProps = (state) => ({
   account: state.account,
+  permissions: state?.permissions?.data,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
-      logOut: setLogOut,
+      setPermissions: getPermissions,
     },
     dispatch
   );
 };
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddUser);

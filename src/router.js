@@ -12,9 +12,12 @@ import { useAccount } from './hooks/user'
 import LoginPage from './containers/LoginPage'
 import PasswordRecoveryPage from './containers/PasswordRecoveryPage'
 import DashboardPage from './containers/DashboardPage'
-import AddUser from './containers/security/AddUser'
-import EditUser from './containers/security/EditUser'
-import User from './containers/security/User'
+import AddUser from './containers/security/users/AddUser'
+import EditUser from './containers/security/users/EditUser'
+import User from './containers/security/users/User'
+import AddRole from './containers/security/roles/AddRole'
+import EditRole from './containers/security/roles/EditRole'
+import Roles from './containers/security/roles/Roles'
 import Security from './containers/security/Security'
 import Notifications from './components/common/Notifications'
 import { SessionWrapper } from './components/layout/SessionWrapper'
@@ -69,6 +72,15 @@ export default function RoutesGenerator() {
       <Switch>
         <Route path="/login" component={LoginPage} />
         <Route path="/reset-password" component={PasswordRecoveryPage} />
+        <PrivateRoute path="/security/role/index/add">
+          <AddRole />
+        </PrivateRoute>
+        <PrivateRoute path="/security/role/index/:id">
+          <EditRole />
+        </PrivateRoute>
+        <PrivateRoute path="/security/role/index">
+          <Roles />
+        </PrivateRoute>
         <PrivateRoute path="/security/user/index/add">
           <AddUser />
         </PrivateRoute>

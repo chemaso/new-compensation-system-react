@@ -83,7 +83,8 @@ export default function DataViewFilter({
           overflowY: "auto",
         }}
       >
-        {filters.map((item, index) => (
+        {filters.map((item, index) =>{ 
+          return (
           <Grid
             container
             justify="space-between"
@@ -101,16 +102,20 @@ export default function DataViewFilter({
                 fullWidth
                 value={form[item.id] || ""}
                 onChange={(e) => handleFormChange(e, item.id)}
+                inputProps={{
+                  maxLength: item.maxLength || 200
+                }}
                 style={{ width: "100%" }}
                 variant="outlined"
                 id={item.id}
+                type='text'
                 name={item.id}
                 autoComplete={item.id}
                 autoFocus={index === 0}
               />
             </Grid>
           </Grid>
-        ))}
+        )})}
       </List>
 
       <Grid

@@ -4,8 +4,12 @@ import { SET_NOTIFICATIONS, SET_LOGGED_IN, SET_EXPIRED_SESSION } from '../action
 import { useAccount } from '../hooks/user'
 
 export const setLoggedIn = (account, history) => {
+    let data = new FormData();
+    data.append('grant_type', 'password');
+    data.append('username', account.userName);
+    data.append('password', account.password);
     return (dispatch) =>
-    getToken(account)
+    getToken(data)
     .then(({ data: response }) => {
         getLoggedIn({ token: response.access_token, username: account.userName })
             .then(({ data: user }) => {
@@ -49,12 +53,6 @@ export const setLoggedIn = (account, history) => {
             })
     })
     .catch((e) => {
-        const action = {
-            type: SET_LOGGED_IN,
-            account: {
-                error: e.message
-            }
-        }
         if (e.message.indexOf('401') !== -1) {
             dispatch({
                 type: SET_NOTIFICATIONS,
@@ -68,7 +66,6 @@ export const setLoggedIn = (account, history) => {
             notifications: 'Something went wrong, please try again later.',
             severity: 'error'
         })
-        dispatch(action)
         return e.message
     })
 

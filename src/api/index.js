@@ -4,12 +4,17 @@ const error = 'http://demo1733049.mockable.io/unauthorized'
 const correct = 'http://demo1733049.mockable.io/login'
 const logup = 'http://demo1733049.mockable.io/logup'
 const passRecovery = 'http://demo1733049.mockable.io/recovery'
-const baseUrl = 'http://127.0.0.1:9998'
-const expressUrl = 'http://localhost:5000'
+const baseUrl = 'http://3.15.202.237:9998/visor'
 
-export const getToken = (payload) => axios.post(`${expressUrl}/oauth/token`, { params: { grant_type: 'password', ...payload }})
-export const getLoggedIn = (payload) => axios.post(`${expressUrl}/auth/user?access_token=${payload.token}`, { username: payload.username })
+const defaultHeaders  = {
 
+    "Authorization": "Basic bXktdHJ1c3RlZC1jbGllbnQ6c2VjcmV0",
+
+}
+
+export const getToken = (payload) => axios.post(`${baseUrl}/oauth/token`, payload, { headers: defaultHeaders })
+
+export const getLoggedIn = (payload) => axios.post(`${baseUrl}/auth/user?access_token=${payload.token}`, { username: payload.username })
 
 export const getLogin = (payload) => {
     let url = error

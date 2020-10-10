@@ -7,7 +7,7 @@ import { useAccount } from '../../hooks/user'
 import { setExpiredSession } from '../../actions/account'
 import ExpirationModal from '../common/ExpiratonModal'
 
-export const SessionWrapper = ({ children }) => {
+export const SessionWrapper = () => {
   const [counter, setCounter] = useState('')
     const history = useHistory()
     const [open, setOpen] = useState(false)

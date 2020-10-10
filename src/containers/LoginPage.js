@@ -6,6 +6,7 @@ import isEmpty from 'lodash/isEmpty'
 import { useErrorValidator } from '../hooks/externalAccountValidations'
 import LoginForm from '../components/account/LoginForm'
 import ExternalAccountWrapper from '../components/account/ExternalAccountWrapper'
+import Helmet from '../components/common/Helmet'
 import { setLoggedIn } from '../actions/account'
 
 const LoginPage = ({ getLogin, history, match }) => {
@@ -36,6 +37,7 @@ const LoginPage = ({ getLogin, history, match }) => {
   }
   return (
     <ExternalAccountWrapper title='Welcome to SICE' >
+      <Helmet title="Login" />
       <LoginForm
         onChange={handleFormChange}
         onSubmit={handleSubmit}
