@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
-import { omit } from "lodash";
+import { isEmpty, omit } from "lodash";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import {
@@ -120,10 +120,12 @@ export default function TreeViewComponent({
   const [expanded, setExpanded] = useState([]);
   const [selected, setSelected] = useState({});
   useEffect(() => {
-    let sel = {};
-    values.map((v) => (sel = { ...sel, [v.code]: true }));
-    setExpanded(values.map((v) => v.code));
-    setSelected(sel);
+    if (!isEmpty(values)) {
+      let sel = {};
+      values.map((v) => (sel = { ...sel, [v.code]: true }));
+      setExpanded(values.map((v) => v.code));
+      setSelected(sel);
+    }
   }, [values]);
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);
@@ -153,6 +155,7 @@ export default function TreeViewComponent({
     setSelected({});
     onChange({});
   };
+
   const builder = (v) =>
     v?.map((item) => {
       const checked = selected[item.code] ? true : false;
