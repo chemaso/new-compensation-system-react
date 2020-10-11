@@ -5,33 +5,18 @@ import { isNil } from "lodash";
 import { useLocation } from "react-router-dom";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
-import DashboardIcon from "@material-ui/icons/Dashboard";
 import Collapse from "@material-ui/core/Collapse";
-import LayersIcon from "@material-ui/icons/Layers";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import IconButton from "@material-ui/core/IconButton";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-    color: "white,",
-  },
-  nested: {
-    height: 35,
-    paddingLeft: theme.spacing(4),
-  },
-}));
+import Icon from '../common/Icon'
 
 export const ListItems = ({ items, history }) => {
   const [selected, setSelected] = useState("Dashboard");
   const [subSelected, setSubSelected] = useState("");
   const { pathname } = useLocation();
-  
+
   const [levels] = items
     ?.map((val) => {
       const current = val.route === pathname;
@@ -91,9 +76,7 @@ export const ListItems = ({ items, history }) => {
                     : "transparent",
               }}
             >
-              <ListItemIcon>
-                <DashboardIcon style={{ color: "white" }} />
-              </ListItemIcon>
+              <ListItemIcon>{Icon(item.route)}</ListItemIcon>
               <ListItemText primary={item.title} style={{ color: "white" }} />
               {!isEmpty(item.subcontent) && (
                 <IconButton>
@@ -111,7 +94,6 @@ export const ListItems = ({ items, history }) => {
                   item.subcontent.filter((v) => v.title === subSelected)
                 );
                 const subSelectionValue = val.title === subSelected;
-
                 return (
                   <Collapse
                     key={val.title}
@@ -136,7 +118,7 @@ export const ListItems = ({ items, history }) => {
                         }
                       >
                         <ListItemIcon>
-                          <LayersIcon style={{ color: "white" }} />
+                          {Icon(val.route)}
                         </ListItemIcon>
                         <ListItemText
                           primary={val.title}

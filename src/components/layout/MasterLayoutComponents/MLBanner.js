@@ -11,9 +11,9 @@ import IconButton from '@material-ui/core/IconButton';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import { MenuSkeleton } from '../../common/Skeletons'
 import { MasterLayoutBreadcrumbs as Breadcrumbs } from '../../common/Breadcrumbs'
+import Icon from '../../common/Icon'
 
 const MasterLayoutBanner = ({ items = [], isMobile, loading }) => {
   const [open, setOpen] = useState(true)
@@ -36,11 +36,12 @@ const MasterLayoutBanner = ({ items = [], isMobile, loading }) => {
     })
     .filter((item) => item)
   const titleVal = levels?.map((val) => val.title).toString().replace(',', ' - ')
+  const styles = { fontSize: 40 }
   return (
         <Grid container alignItems='center' justify='space-between' style={{ color: 'white', paddingLeft: open ? 30 : 10, height: open ? 80 : 40, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)'}}>
          {!loading ? <Grid item>
           <Grid container alignItems='center'>  
-            {open && <NotificationsIcon fontSize="large" />}
+            {open && Icon(pathname, styles)}
             <div>
               {open && <Typography variant={open ? "h6" : 'subtitle2'} style={{ paddingLeft: 20, fontWeight: 'bold'}}>
                 {titleVal}

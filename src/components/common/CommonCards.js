@@ -11,6 +11,7 @@ import DnsIcon from "@material-ui/icons/Dns";
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import LaptopIcon from '@material-ui/icons/Laptop';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
+import Icon from './Icon'
 
 const useStyles = makeStyles({
   root: {
@@ -32,59 +33,12 @@ const useStyles = makeStyles({
 });
 
 export default function CommonCard({ item, index, history }) {
-  const Icons = [
-    <AppsIcon
-      style={{
-        fontSize: "77px",
-        color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-      }}
-    />,
-    <DnsIcon
-      style={{
-        fontSize: "77px",
-        color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-      }}
-    />,
-    <EqualizerIcon
-      style={{
-        fontSize: "77px",
-        color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-      }}
-    />,
-    <LaptopIcon
-      style={{
-        fontSize: "77px",
-        color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-      }}
-    />,
-    <AppsIcon
-    style={{
-      fontSize: "77px",
-      color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-    }}
-  />,
-  <DnsIcon
-    style={{
-      fontSize: "77px",
-      color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-    }}
-  />,
-  <EqualizerIcon
-    style={{
-      fontSize: "77px",
-      color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-    }}
-  />,
-  <LaptopIcon
-    style={{
-      fontSize: "77px",
-      color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
-    }}
-  />,
-  ];
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
-
+  const styles = {
+    fontSize: "70px",
+    padding: '4px',
+    color: index === 0 ? "rgb(255, 96, 13)" : "#cccccc",
+  }
   return (
     <Card
       className={classes.root}
@@ -100,6 +54,7 @@ export default function CommonCard({ item, index, history }) {
           <Card
             style={{
               position: "absolute",
+              background: '#FAFAFA',
               left: "-25px",
               minHeight: "50%",
               minWidth: "50%",
@@ -107,7 +62,7 @@ export default function CommonCard({ item, index, history }) {
               boxShadow: "none",
             }}
           >
-            {Icons[index]}
+            {Icon(item.route, styles)}
           </Card>
         </Grid>
         <Grid item>
