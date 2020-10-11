@@ -18,6 +18,10 @@ import User from './containers/security/users/User'
 import AddRole from './containers/security/roles/AddRole'
 import EditRole from './containers/security/roles/EditRole'
 import Roles from './containers/security/roles/Roles'
+import Departments from './containers/maintanence/departments/Departments'
+import AddDepartment from './containers/maintanence/departments/AddDepartment'
+import EditDepartment from './containers/maintanence/departments/EditDepartment'
+import Maintanence from './containers/maintanence/Maintanence'
 import Security from './containers/security/Security'
 import Notifications from './components/common/Notifications'
 import { SessionWrapper } from './components/layout/SessionWrapper'
@@ -72,6 +76,15 @@ export default function RoutesGenerator() {
       <Switch>
         <Route path="/login" component={LoginPage} />
         <Route path="/reset-password" component={PasswordRecoveryPage} />
+        <PrivateRoute path="/maintanence/department/index/add">
+          <AddDepartment />
+        </PrivateRoute>
+        <PrivateRoute path="/maintanence/department/index/:id">
+          <EditDepartment />
+        </PrivateRoute>
+        <PrivateRoute path="/maintanence/department/index">
+          <Departments />
+        </PrivateRoute>
         <PrivateRoute path="/security/role/index/add">
           <AddRole />
         </PrivateRoute>
@@ -92,6 +105,9 @@ export default function RoutesGenerator() {
         </PrivateRoute>
         <PrivateRoute path="/security">
           <Security />
+        </PrivateRoute>
+        <PrivateRoute path="/maintanence">
+          <Maintanence />
         </PrivateRoute>
         <PrivateRoute path="/">
           <DashboardPage />
