@@ -9,12 +9,9 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 3,
         border: 0,
         color: 'white !important',
-        height: 48,
-        padding: '0 30px',
         boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
       },
-    wrapper: {
-        margin: theme.spacing(1),
+    wrapper: {     
         position: 'relative',
       },
       buttonSuccess: {
@@ -53,7 +50,7 @@ export default function CButton({ children, buttonClassname, onClick, loading = 
                 onClick={onClick}
                 {...rest}
             >
-                {loading ? '' : children}
+                {loading ? <span style={{ color: 'transparent'}}>{children}</span> : children}
         </Button>
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
         </div>

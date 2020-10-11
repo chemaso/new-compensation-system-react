@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { Grid, TextField, InputLabel } from "@material-ui/core";
 import MultiSelectBox from "./MultiSelectBox";
 import CheckboxList from "./CheckboxList";
 import TreeView from "./TreeView";
-import { isEmpty } from "lodash";
 
 const options = [
   {
@@ -30,21 +29,10 @@ const options = [
 ];
 
 const Form = ({ onChange, form = {}, permissions = [], formInputs = [] }) => {
-  const [proccesed, setProccesed] = useState({});
-
-  useEffect(() => {
-    if (!isEmpty(form)) {
-      setProccesed(form)
-    }
-  }, [form])
 
   const handleForm = (value, name) => {
-    setProccesed({
-      ...proccesed,
-      [name]: value,
-    });
     onChange({
-      ...proccesed,
+      ...form,
       [name]: value,
     })
   };
@@ -88,6 +76,7 @@ const Form = ({ onChange, form = {}, permissions = [], formInputs = [] }) => {
             />
           );
         }
+        const value = item.noSpaces ? form[item.id]?.replace(/\s+/g, '') : form[item.id]
         return (
           <Grid item lg={5} sm={5} xs={12} style={{ marginRight: 30 }}>
             <InputLabel
@@ -104,7 +93,7 @@ const Form = ({ onChange, form = {}, permissions = [], formInputs = [] }) => {
               margin="normal"
               required
               disabled={item.disabled}
-              value={form[item.id]}
+              value={value}
               fullWidth
               onChange={(v) => handleForm(v.target.value, item.id)}
               InputLabelProps={{

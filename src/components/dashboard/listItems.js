@@ -31,7 +31,7 @@ export const ListItems = ({ items, history }) => {
   const [selected, setSelected] = useState("Dashboard");
   const [subSelected, setSubSelected] = useState("");
   const { pathname } = useLocation();
-
+  
   const [levels] = items
     ?.map((val) => {
       const current = val.route === pathname;

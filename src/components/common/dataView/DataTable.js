@@ -92,6 +92,7 @@ export default function DataTable({
   sortable = false,
   initialOrder = "asc",
   headCells,
+  loading,
   renderActions,
   onTableChange = () => {},
   rows,

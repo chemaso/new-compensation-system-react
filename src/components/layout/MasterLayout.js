@@ -1,10 +1,8 @@
 import React, { useContext, useEffect } from 'react';
 import clsx from 'clsx';
-import moment from 'moment';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import Box from '@material-ui/core/Box';
-import { get, groupBy, isEmpty, uniqBy } from 'lodash'
+import { get } from 'lodash'
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
@@ -121,7 +119,7 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems: m
               <ChevronLeftIcon style={{ color: '#f17f2d' }} />
             </IconButton>
           </div>
-         {!loading ? <MenuItems /> : <MenuSkeleton items={6} />}
+         {!loading ? MenuItems() : <MenuSkeleton items={6} />}
         </Drawer>)}
       {isMobile && (
          <Drawer
@@ -132,7 +130,7 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems: m
          onClose={() => setOpen(false)}
          open={open}
        >
-       {!loading ? <MenuItems /> : <MenuSkeleton items={6} />}
+       {!loading ? MenuItems() : <MenuSkeleton items={6} />}
        </Drawer>
       )}
       <main className={classes.content}>
