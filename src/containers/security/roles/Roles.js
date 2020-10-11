@@ -16,26 +16,6 @@ import Helmet from "../../../components/common/Helmet";
 import { getRoles } from '../../../actions/roles'
 import { useAccount } from "../../../hooks/user";
 
-function createData(id, name, fat, actions) {
-  return { id, name, fat, actions };
-}
-
-const rows = [
-  createData(4324, "Pedro Perez", 305, 3.7, 67, 4.3, true),
-  createData(42312, "Jose Lue", 452, 25.0, 51, 4.9, true),
-  createData(5345, "Carlos Lc", 262, 16.0, 24, 6.0, true),
-  createData(54354, "Joua Chas", 159, 6.0, 24, 4.0, true),
-  createData(654645, "Gingerbread Pel", 356, 16.0, 49, 3.9, true),
-  createData(55234, "Honeycomb Cas", 408, 3.2, 87, 6.5, true),
-  createData(42341, "Cash Jonh", 237, 9.0, 37, 4.3, true),
-  createData(7657, "Jelly Pepe", 375, 0.0, 94, 0.0, true),
-  createData(324, "Carlos Julio", 518, 26.0, 65, 7.0, true),
-  createData(8789, "Daniel Marque", 392, 0.2, 98, 0.0, true),
-  createData(8679, "Marcos Paz", 318, 0, 81, 2.0, true),
-  createData(1235, "Daniel Ortega", 360, 19.0, 9, 37.0, true),
-  createData(474, "Oreo Loreo", 437, 18.0, 63, 4.0, true),
-];
-
 const Roles = ({
   children,
   logOut,
@@ -85,7 +65,7 @@ const Roles = ({
   })
 
   const handleTableChange = (values) => {
-    const page = values.page || roles.page
+    const page = values.page
     const size = values.size || roles.size
     getRolesList(user?.token, page, size)
   }
@@ -162,7 +142,7 @@ const Roles = ({
                   rows={rows || []}
                   headCells={headCells}
                   size={roles.size || 0}
-                  page={roles.page || 0}
+                  page={roles.number || 0}
                   sortable={false}
                   onTableChange={handleTableChange}
                   total={roles.numberOfElements || 0}
