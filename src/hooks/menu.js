@@ -1,9 +1,11 @@
-import { get, groupBy, isEmpty, uniqBy } from 'lodash'
+import { uniq, groupBy, isEmpty, uniqBy } from 'lodash'
 
 export const useMenuItems = () => {
     return {
         generate: (user) => {
-            const codes = user.roles[0].permissions.map((item) => item.code)
+            let userRoles = user.roles.map((it) => it.permissions)?.flat(1)
+
+            const codes = uniq(userRoles.map((item) => item.code))
 
             const subRouteGenerator = (val) => {
               const setPermission = (allow, current) => !isEmpty(val
