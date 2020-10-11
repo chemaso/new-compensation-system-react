@@ -10,3 +10,5 @@ export const SET_LOGGED_UP = 'SET_LOGGED_UP'
 export const SET_PASSWORD_RECOVERY = 'SET_PASSWORD_RECOVERY'
 
 export const GET_PERMISSIONS = 'GET_PERMISSIONS'
+export const GET_ROLES = 'GET_ROLES'
+export const GET_ROLE = 'GET_ROLE'

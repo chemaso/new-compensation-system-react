@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
-import { isNil, omit } from "lodash";
+import { omit } from "lodash";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import {
   Checkbox,
   Paper,
-  Grid,
-  Button,
   InputLabel,
   Tooltip,
   IconButton,
@@ -99,7 +97,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TreeViewComponent({ permissions, item, onChange }) {
+export default function TreeViewComponent({
+  permissions,
+  values = [],
+  item,
+  onChange,
+}) {
   let all = [];
   const map = (v) =>
     v?.map((item) => {
@@ -112,12 +115,16 @@ export default function TreeViewComponent({ permissions, item, onChange }) {
         [item.code]: map(item.leafList),
       };
     });
-
   map(permissions?.leafList);
   const classes = useStyles();
   const [expanded, setExpanded] = useState([]);
   const [selected, setSelected] = useState({});
-
+  useEffect(() => {
+    let sel = {};
+    values.map((v) => (sel = { ...sel, [v.code]: true }));
+    setExpanded(values.map((v) => v.code));
+    setSelected(sel);
+  }, [values]);
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);
   };

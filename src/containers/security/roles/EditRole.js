@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getPermissions } from "../../../actions/permissions";
+import { getRoleById } from "../../../actions/roles";
 import { useParams } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { setLogOut } from "../../../actions/account";
+import { getPermissions } from "../../../actions/permissions";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import UserForm from "../../../components/common/Form";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
@@ -39,8 +39,10 @@ const formInputs = [
 const EditRole = ({
   children,
   logOut,
-  setPermissions,
+  getRole,
+  getPermission,
   permissions,
+  role,
   account,
   ...rest
 }) => {
@@ -50,19 +52,20 @@ const EditRole = ({
   const { decrypt } = useAccount();
   
   const user = decrypt(account?.user);
-
   useEffect(() => {
     setLoading(true)
-    setPermissions(user?.token)
+    getPermission(user?.token)
+    getRole(user?.token, params.id)
         .finally(()=> setLoading(false));
   }, []);
 
   const handleForm = (v) => {
     setValues(v)
   }
+
   return (
     <>
-      <Helmet title="Add Role" />
+      <Helmet title="Edit Role" />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
@@ -76,7 +79,7 @@ const EditRole = ({
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm permissions={permissions} formInputs={formInputs} onChange={handleForm} />
+                  <UserForm form={role} permissions={permissions} formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -120,12 +123,14 @@ const EditRole = ({
 const mapStateToProps = (state) => ({
   account: state.account,
   permissions: state?.permissions?.data,
+  role: state?.roles?.role
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
-      setPermissions: getPermissions,
+      getRole: getRoleById,
+      getPermission: getPermissions,
     },
     dispatch
   );

@@ -4,6 +4,7 @@ import { Grid, TextField, InputLabel } from "@material-ui/core";
 import MultiSelectBox from "./MultiSelectBox";
 import CheckboxList from "./CheckboxList";
 import TreeView from "./TreeView";
+import { isEmpty } from "lodash";
 
 const options = [
   {
@@ -28,12 +29,15 @@ const options = [
   },
 ];
 
-const Form = ({ onChange, form = {}, permissions, formInputs = [] }) => {
+const Form = ({ onChange, form = {}, permissions = [], formInputs = [] }) => {
   const [proccesed, setProccesed] = useState({});
 
   useEffect(() => {
-    setProccesed(form)
-  }, [])
+    if (!isEmpty(form)) {
+      setProccesed(form)
+    }
+  }, [form])
+
   const handleForm = (value, name) => {
     setProccesed({
       ...proccesed,
@@ -52,6 +56,7 @@ const Form = ({ onChange, form = {}, permissions, formInputs = [] }) => {
             <Grid xs={12}>
               <TreeView
                 permissions={permissions}
+                values={form[item.id] || []}
                 item={item}
                 onChange={(v) => handleForm(v, item.id)}
               />
@@ -99,6 +104,7 @@ const Form = ({ onChange, form = {}, permissions, formInputs = [] }) => {
               margin="normal"
               required
               disabled={item.disabled}
+              value={form[item.id]}
               fullWidth
               onChange={(v) => handleForm(v.target.value, item.id)}
               InputLabelProps={{

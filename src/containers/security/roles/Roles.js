@@ -13,6 +13,8 @@ import NotificationsModal from "../../../components/common/NotificationsModal";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Helmet from "../../../components/common/Helmet";
+import { getRoles } from '../../../actions/roles'
+import { useAccount } from "../../../hooks/user";
 
 function createData(id, name, fat, actions) {
   return { id, name, fat, actions };
@@ -38,10 +40,21 @@ const Roles = ({
   children,
   logOut,
   account,
-  setPermissions,
-  permissions,
+  getRolesList,
+  roles,
   ...rest
 }) => {
+
+  const { decrypt } = useAccount();
+  
+  const user = decrypt(account?.user);
+
+  useEffect(() => {
+    setLoading(true)
+    getRolesList(user?.token, 0, 5)
+      .finally(() => setLoading(false))
+  }, [])
+
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -58,12 +71,25 @@ const Roles = ({
       label: "ID",
     },
     { id: "name", label: "Name" },
-    { id: "description", label: "Description" },
     { id: "actions", label: "Actions" },
   ];
   const handleFilter = (form) => {
     console.log(form);
   };
+  const rows = roles?.content?.map((item) => {
+    return {
+      id: item.id,
+      name: item.name,
+      actions: true,
+    }
+  })
+
+  const handleTableChange = (values) => {
+    const page = values.page || roles.page
+    const size = values.size || roles.size
+    getRolesList(user?.token, page, size)
+  }
+
   return (
     <>
       <Helmet title="Roles" />
@@ -133,9 +159,17 @@ const Roles = ({
               </Grid>
               <Grid item xs={12}>
                 <DataTable
-                  rows={rows}
+                  rows={rows || []}
                   headCells={headCells}
-                  renderActions={(e) => handleRenderActions(e)}
+                  size={roles.size || 0}
+                  page={roles.page || 0}
+                  sortable={false}
+                  onTableChange={handleTableChange}
+                  total={roles.numberOfElements || 0}
+                  totalPages={roles.totalPages || 0}
+                  lastPage={roles.last}
+                  firstPage={roles.first}
+                  renderActions={handleRenderActions}
                 />
               </Grid>
               <DataViewFilter
@@ -176,11 +210,13 @@ const Roles = ({
 
 const mapStateToProps = (state) => ({
   account: state.account,
-  permissions: state?.permissions?.data,
+  roles: state?.roles?.roles,
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({
+    getRolesList: getRoles,
+  }, dispatch);
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Roles);
