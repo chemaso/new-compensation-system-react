@@ -1,5 +1,6 @@
 import {
   getDepartments as get,
+  getAllDepartments as getAll,
   getDepartmentById as getById,
   putDepartment as put,
   postDepartment as post,
@@ -14,9 +15,10 @@ import {
   DELETE_DEPARTMENT,
 } from "../actionTypes";
 
-export const getDepartments = (token, page, size) => {
+export const getDepartments = (token, page, size, filter, all) => {
+  const endpoint = all ? getAll : get
   return (dispatch) =>
-    get(token, page, size)
+    endpoint(token, page, size, filter)
       .then(({ data: response }) => {
         const action = {
           type: GET_DEPARTMENTS,

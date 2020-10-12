@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getPermissions } from "../../../actions/permissions";
+import { postRole } from "../../../actions/roles";
 import { useParams } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { setLogOut } from "../../../actions/account";
@@ -11,6 +12,7 @@ import { Grid, Typography, Button, Divider } from "@material-ui/core";
 import { useAccount } from "../../../hooks/user";
 
 import Helmet from "../../../components/common/Helmet";
+import CButton from "../../../components/common/ButtonWithLoading";
 
 const formInputs = [
   {
@@ -34,11 +36,13 @@ const AddRole = ({
   children,
   logOut,
   setPermissions,
+  createRole,
   permissions,
   account,
   ...rest
 }) => {
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({});
   const params = useParams();
   const { decrypt } = useAccount();
@@ -49,9 +53,31 @@ const AddRole = ({
         .finally(()=> setLoading(false));
   }, []);
 
-  const handleForm = (v) => {
-    setValues(v)
+  const handleForm = (e, f) => {
+    setValues({
+      ...values,
+      ...e
+    })
   }
+
+  let all = [];
+  const map = (v) =>
+    v?.map((item) => {
+      if (item.leafList.length === 0) {
+        all = [...all, item];
+        return {
+          father: item.code,
+          childs: [],
+        };
+      }
+      all = [...all, item];
+      return {
+        father: item.code,
+        childs: map(item.leafList),
+      };
+    });
+
+  map(permissions?.leafList);
 
   return (
     <>
@@ -59,6 +85,25 @@ const AddRole = ({
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
+          const handleSubmit = () => {
+            let selection = all
+            .map((i) => ({
+              code: i.code,
+              description: i.description,
+            }))
+            .filter((v) => values?.permissions[v.code]);
+            const payload = {
+              name: values?.name || '',
+              description: values?.description || '',
+              permissions: selection
+            }
+            setSubmitting(true)
+            createRole(user?.token, payload)
+                .then(() => {
+                  setSubmitting(false)
+                  history.push('/security/role/index')
+                })
+          };
           return loading ? (
             <DataViewSkeleton />
           ) : (
@@ -87,19 +132,20 @@ const AddRole = ({
                   >
                     Cancel
                   </Button>
-                  <Button
+                  <CButton
                     variant="contained"
+                    loading={submitting}
                     style={{
                       fontWeight: "bold",
                       color: "white",
                       background:
                         "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                     }}
-                    onClick={() => console.log('saving', values)}
+                    onClick={handleSubmit}
                     color="default"
                   >
                     Save Changes
-                  </Button>
+                  </CButton>
                 </Grid>
               </Grid>
             </Grid>
@@ -119,6 +165,7 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       setPermissions: getPermissions,
+      createRole: postRole,
     },
     dispatch
   );

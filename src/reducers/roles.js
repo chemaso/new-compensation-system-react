@@ -1,4 +1,4 @@
-import { GET_ROLES, GET_ROLE } from '../actionTypes'
+import { GET_ROLES, GET_ROLE, PUT_ROLE, POST_ROLE, DELETE_ROLE } from '../actionTypes'
 
 const initialState = {
     roles: {},
@@ -12,6 +12,21 @@ const roles = (state = initialState, action) => {
           roles: action.roles
         }
       case GET_ROLE:
+        return {
+          ...initialState,
+          role: action.role
+        }
+      case PUT_ROLE:
+        return {
+          ...initialState,
+          role: action.role
+        }
+      case POST_ROLE:
+        return {
+          ...initialState,
+          role: action.role
+        }
+      case DELETE_ROLE:
         return {
           ...initialState,
           role: action.role

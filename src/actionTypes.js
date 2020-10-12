@@ -13,6 +13,9 @@ export const GET_PERMISSIONS = 'GET_PERMISSIONS'
 
 export const GET_ROLES = 'GET_ROLES'
 export const GET_ROLE = 'GET_ROLE'
+export const PUT_ROLE = 'PUT_ROLE'
+export const POST_ROLE = 'POST_ROLE'
+export const DELETE_ROLE = 'DELETE_ROLE'
 
 export const GET_DEPARTMENTS = 'GET_DEPARTMENTS'
 export const GET_DEPARTMENT = 'GET_DEPARTMENT'

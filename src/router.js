@@ -23,6 +23,7 @@ import AddDepartment from './containers/maintanence/departments/AddDepartment'
 import EditDepartment from './containers/maintanence/departments/EditDepartment'
 import Maintanence from './containers/maintanence/Maintanence'
 import Security from './containers/security/Security'
+import Query from './containers/query/Query'
 import Notifications from './components/common/Notifications'
 import { SessionWrapper } from './components/layout/SessionWrapper'
 
@@ -108,6 +109,9 @@ export default function RoutesGenerator() {
         </PrivateRoute>
         <PrivateRoute path="/maintanence">
           <Maintanence />
+        </PrivateRoute>
+        <PrivateRoute path="/query">
+          <Query />
         </PrivateRoute>
         <PrivateRoute path="/">
           <DashboardPage />

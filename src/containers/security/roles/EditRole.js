@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getRoleById } from "../../../actions/roles";
+import { getRoleById, putRole } from "../../../actions/roles";
 import { useParams } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { getPermissions } from "../../../actions/permissions";
@@ -11,6 +11,8 @@ import { Grid, Typography, Button, Divider } from "@material-ui/core";
 import { useAccount } from "../../../hooks/user";
 
 import Helmet from "../../../components/common/Helmet";
+import CButton from "../../../components/common/ButtonWithLoading";
+import { isNil } from "lodash";
 
 const formInputs = [
   {
@@ -26,12 +28,13 @@ const formInputs = [
   },
   {
     label: "Description",
-    id: "Description",
+    id: "description",
     maxLength: 100,
   },
   {
     label: "Permissions",
     id: "permissions",
+    isEdit: true,
     type: "treeview",
   },
 ];
@@ -40,6 +43,7 @@ const EditRole = ({
   children,
   logOut,
   getRole,
+  editRole,
   getPermission,
   permissions,
   role,
@@ -47,28 +51,81 @@ const EditRole = ({
   ...rest
 }) => {
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({});
   const params = useParams();
   const { decrypt } = useAccount();
-  
+
   const user = decrypt(account?.user);
   useEffect(() => {
-    setLoading(true)
-    getPermission(user?.token)
-    getRole(user?.token, params.id)
-        .finally(()=> setLoading(false));
+    setLoading(true);
+    getPermission(user?.token);
+    getRole(user?.token, params.id).finally(() => setLoading(false));
   }, []);
 
-  const handleForm = (v) => {
-    setValues(v)
-  }
+  useEffect(() => {
+    setValues(role);
+  }, [role]);
+ 
+  let all = [];
+  const map = (v) =>
+    v?.map((item) => {
+      if (item.leafList.length === 0) {
+        all = [...all, item];
+        return {
+          father: item.code,
+          childs: [],
+        };
+      }
+      all = [...all, item];
+      return {
+        father: item.code,
+        childs: map(item.leafList),
+      };
+    });
 
+  map(permissions?.leafList);
+
+  const handleForm = (val) => {
+    const per = all
+    .map((i) => ({
+      code: i.code,
+      description: i.description,
+    }))
+    .filter((v) => !isNil(val?.permissions[v.code]));
+    setValues({
+      ...val,
+      permissions: per
+    })
+  }
   return (
     <>
       <Helmet title="Edit Role" />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
+          const handleSubmit = () => {
+            let selection = values?.permissions
+            if (!Array.isArray(values?.permissions)) {
+              selection = all
+              .map((i) => ({
+                code: i.code,
+                description: i.description,
+              }))
+              .filter((v) => values?.permissions[v.code]);
+            }
+            const payload = {
+              name: values?.name || '',
+              description: values?.description || '',
+              permissions: selection
+            }
+            setSubmitting(true)
+              editRole(user?.token, params?.id, payload)
+                .then(() => {
+                  setSubmitting(false)
+                  history.push('/security/role/index')
+                })
+          };
           return loading ? (
             <DataViewSkeleton />
           ) : (
@@ -79,7 +136,7 @@ const EditRole = ({
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm form={role} permissions={permissions} formInputs={formInputs} onChange={handleForm} />
+                <UserForm form={values} permissions={permissions} formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -97,19 +154,20 @@ const EditRole = ({
                   >
                     Cancel
                   </Button>
-                  <Button
+                  <CButton
                     variant="contained"
+                    loading={submitting}
                     style={{
                       fontWeight: "bold",
                       color: "white",
                       background:
                         "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                     }}
-                    onClick={() => console.log('editing', values)}
+                    onClick={handleSubmit}
                     color="default"
                   >
                     Save Changes
-                  </Button>
+                  </CButton>
                 </Grid>
               </Grid>
             </Grid>
@@ -123,13 +181,14 @@ const EditRole = ({
 const mapStateToProps = (state) => ({
   account: state.account,
   permissions: state?.permissions?.data,
-  role: state?.roles?.role
+  role: state?.roles?.role,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       getRole: getRoleById,
+      editRole: putRole,
       getPermission: getPermissions,
     },
     dispatch
