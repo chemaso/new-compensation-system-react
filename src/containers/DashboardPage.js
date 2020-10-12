@@ -24,7 +24,7 @@ const DashboardPage = ({ children, logOut, ...rest }) => {
           ) : (
             <Grid container style={{ marginRight: 40 }}>
               {items.map((item, index) => (
-                <Grid key={index} item xs={6} style={{ marginBottom: 20 }}>
+                <Grid key={index} item xs={12} md={6} style={{ marginBottom: 20 }}>
                   <CommonCard item={item} index={index} history={history} />
                 </Grid>
               ))}

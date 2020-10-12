@@ -38,18 +38,15 @@ const Departments = ({
 
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [deleteId, setDeleteId] = useState('');
 
   const filters = [
     {
-      id: "code",
-      label: "Code",
-      maxLength: 25,
-    },
-    {
       id: "name",
       label: "Name",
+      type: 'text',
       maxLength: 100,
     },
   ];
@@ -66,7 +63,14 @@ const Departments = ({
     { id: "actions", label: "Actions" },
   ];
   const handleFilter = (form) => {
-    console.log(form);
+    setFilterLoading(true)
+    const page = departments.number
+    const size = departments.size
+    getDepartmentsList(user?.token, page, size, form.name)
+      .finally(() => {
+        setFilterLoading(false)
+        setFilterOpen(false)
+      })
   };
   const rows = departments?.content?.map((item) => {
     return {
@@ -178,6 +182,7 @@ const Departments = ({
               <DataViewFilter
                 onFilter={handleFilter}
                 filterOpen={filterOpen}
+                loading={filterLoading}
                 setFilterOpen={setFilterOpen}
                 filters={filters}
               />

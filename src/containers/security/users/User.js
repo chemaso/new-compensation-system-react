@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { getRoles } from '../../../actions/roles'
 import { flatMap, isEmpty, isNil } from "lodash";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
@@ -13,6 +14,8 @@ import NotificationsModal from "../../../components/common/NotificationsModal";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Helmet from "../../../components/common/Helmet";
+import { useAccount } from "../../../hooks/user";
+import { getDepartments } from '../../../actions/departments'
 
 function createData(id, name, fat, carbs, protein, actions) {
   return { id, name, fat, carbs, protein, actions };
@@ -34,41 +37,63 @@ const rows = [
   createData(474, "Oreo Loreo", 437, 18.0, 63, 4.0, true),
 ];
 
-const User = ({ children, logOut, account,  setPermissions, permissions, ...rest }) => {
+const User = ({ children, logOut, account,  setPermissions, permissions, roles, departments, fetchRoles, fetchDepartments, ...rest }) => {
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
+  const { decrypt } = useAccount();
+  
+  const user = decrypt(account?.user);
+
+  useEffect(() => {
+    fetchDepartments(user?.token, 0, 0, {}, true)
+    fetchRoles(user?.token, 0, 0, {}, true)
+  }, [])
   const filters = [
     {
       id: "id",
+      type: 'text',
       label: "Identification",
       maxLength: 20,
     },
     {
       id: "login",
+      type: 'text',
+      noSpaces: true,
       label: "Login",
       maxLength: 50,
     },
     {
       id: "name",
+      type: 'text',
       label: "Name",
       maxLength: 100,
     },
     {
-      id: "department",
-      label: "Department",
-    },
-    {
       id: "email",
+      type: 'text',
+      noSpaces: true,
       label: "Email",
       maxLength: 50,
     },
     {
       id: "profile",
+      type: 'select',
+      options: roles?.content,
       label: "Profile",
     },
+    {
+      id: "department",
+      type: 'select',
+      options: departments?.content?.map((item) => ({
+        name: `${item.id} - ${item.name}`,
+        id: item.id,
+      })),
+      label: "Department",
+    },
   ];
+
   const headCells = [
     {
       id: "id",
@@ -158,12 +183,12 @@ const User = ({ children, logOut, account,  setPermissions, permissions, ...rest
                   renderActions={(e) => handleRenderActions(e)}
                 />
               </Grid>
-              <DataViewFilter
+              {roles && departments && <DataViewFilter
                 onFilter={handleFilter}
                 filterOpen={filterOpen}
                 setFilterOpen={setFilterOpen}
                 filters={filters}
-              />
+              />}
               <NotificationsModal
                 open={openDelete}
                 handleModal={setOpenDelete}
@@ -196,11 +221,16 @@ const User = ({ children, logOut, account,  setPermissions, permissions, ...rest
 
 const mapStateToProps = (state) => ({
   account: state.account,
+  departments: state?.departments?.departments,
+  roles: state?.roles?.roles,
   permissions: state?.permissions?.data,
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({},
+  return bindActionCreators({
+    fetchRoles: getRoles,
+    fetchDepartments: getDepartments
+  },
     dispatch
   );
 };

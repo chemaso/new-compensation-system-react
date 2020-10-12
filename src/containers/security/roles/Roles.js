@@ -13,7 +13,7 @@ import NotificationsModal from "../../../components/common/NotificationsModal";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Helmet from "../../../components/common/Helmet";
-import { getRoles } from '../../../actions/roles'
+import { getRoles, deleteRole } from "../../../actions/roles";
 import { useAccount } from "../../../hooks/user";
 
 const Roles = ({
@@ -21,28 +21,32 @@ const Roles = ({
   logOut,
   account,
   getRolesList,
+  removeRole,
   roles,
   ...rest
 }) => {
+  const [loading, setLoading] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
+  const [openDelete, setOpenDelete] = useState(false);
+  const [filter, setFilter] = useState('');
+  const [filterLoading, setFilterLoading] = useState(false);
 
   const { decrypt } = useAccount();
-  
+
   const user = decrypt(account?.user);
 
   useEffect(() => {
-    setLoading(true)
-    getRolesList(user?.token, 0, 5)
-      .finally(() => setLoading(false))
-  }, [])
+    setLoading(true);
+    getRolesList(user?.token, 0, 5, filter).finally(() => setLoading(false));
+  }, []);
 
-  const [loading, setLoading] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
   const filters = [
     {
       id: "name",
       label: "Name",
       maxLength: 50,
+      type: 'text',
     },
   ];
   const headCells = [
@@ -54,22 +58,37 @@ const Roles = ({
     { id: "actions", label: "Actions" },
   ];
   const handleFilter = (form) => {
-    console.log(form);
+    setFilterLoading(true)
+    const filterValue = form.name || ''
+    setFilter(filterValue)
+    const page = roles?.number;
+    const size = roles?.size;
+    getRolesList(user?.token, page, size, filterValue)
+      .then(() => {
+        setFilterLoading(false)
+        setFilterOpen(false)
+      });
   };
   const rows = roles?.content?.map((item) => {
     return {
       id: item.id,
       name: item.name,
       actions: true,
-    }
-  })
+    };
+  });
 
   const handleTableChange = (values) => {
-    const page = values.page
-    const size = values.size || roles.size
-    getRolesList(user?.token, page, size)
-  }
+    const page = values.page;
+    const size = values.size || roles.size;
+    getRolesList(user?.token, page, size, filter);
+  };
 
+  const handleDeleteRow = () => {
+    setOpenDelete(false);
+    removeRole(user?.token, deleteId).then(() =>
+      getRolesList(user?.token, 0, roles.size, filter)
+    );
+  };
   return (
     <>
       <Helmet title="Roles" />
@@ -104,7 +123,13 @@ const Roles = ({
               render = [
                 ...render,
                 <Tooltip title="Delete" arrow>
-                  <IconButton size="small" onClick={() => setOpenDelete(true)}>
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      setDeleteId(values.id);
+                      setOpenDelete(true);
+                    }}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>,
@@ -145,7 +170,7 @@ const Roles = ({
                   page={roles.number || 0}
                   sortable={false}
                   onTableChange={handleTableChange}
-                  total={roles.numberOfElements || 0}
+                  total={roles.totalElements || 0}
                   totalPages={roles.totalPages || 0}
                   lastPage={roles.last}
                   firstPage={roles.first}
@@ -155,6 +180,7 @@ const Roles = ({
               <DataViewFilter
                 onFilter={handleFilter}
                 filterOpen={filterOpen}
+                loading={filterLoading}
                 setFilterOpen={setFilterOpen}
                 filters={filters}
               />
@@ -174,9 +200,7 @@ const Roles = ({
                   {
                     label: "Continue",
                     style: "primary",
-                    action: () => {
-                      setOpenDelete(false);
-                    },
+                    action: handleDeleteRow,
                   },
                 ]}
               />
@@ -194,9 +218,13 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({
-    getRolesList: getRoles,
-  }, dispatch);
+  return bindActionCreators(
+    {
+      getRolesList: getRoles,
+      removeRole: deleteRole,
+    },
+    dispatch
+  );
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Roles);

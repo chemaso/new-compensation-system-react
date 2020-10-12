@@ -8,16 +8,16 @@ import CommonCard from "../../components/common/CommonCards";
 import { Grid, Typography } from "@material-ui/core";
 import Helmet from '../../components/common/Helmet'
 
-const Maintanence = ({ children, logOut, ...rest }) => {
+const Query = ({ children, logOut, ...rest }) => {
   const [loading, setLoading] = useState(false);
   return (
     <>
-      <Helmet title="Maintanence" />
+      <Helmet title="Query" />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
           const items =
-            menuItems.find((item) => item.route === "/maintanence")?.subcontent ||
+            menuItems.find((item) => item.route === "/query")?.subcontent ||
             [];
 
           return loading ? (
@@ -50,4 +50,4 @@ const mapDispatchToProps = (dispatch) => {
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Maintanence);
+export default connect(mapStateToProps, mapDispatchToProps)(Query);
