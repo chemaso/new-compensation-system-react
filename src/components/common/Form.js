@@ -44,6 +44,7 @@ const Form = ({ onChange, form = {}, permissions = [], formInputs = [] }) => {
             <Grid xs={12}>
               <TreeView
                 permissions={permissions}
+                isEdit={item.isEdit}
                 values={form[item.id] || []}
                 item={item}
                 onChange={(v) => handleForm(v, item.id)}

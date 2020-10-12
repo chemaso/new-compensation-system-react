@@ -9,6 +9,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
+import CButton from "../ButtonWithLoading";
 
 const useStyles = makeStyles({
   list: {
@@ -26,6 +28,7 @@ export default function DataViewFilter({
   filterOpen,
   filterValues = {},
   setFilterOpen,
+  loading = false,
   filters,
   onFilter = () => {},
 }) {
@@ -83,39 +86,61 @@ export default function DataViewFilter({
           overflowY: "auto",
         }}
       >
-        {filters.map((item, index) =>{ 
+        {filters.map((item, index) => {
+          const value = item.noSpaces ? form[item.id]?.replace(/\s+/g, '') : form[item.id]
           return (
-          <Grid
-            container
-            justify="space-between"
-            alignItems="center"
-            style={{ marginBottom: 10 }}
-          >
-            <Grid item xs={3}>
-              <InputLabel style={{ fontWeight: "bold" }} htmlFor={item.id}>
-                {item.label}:
-              </InputLabel>
+            <Grid
+              container
+              justify="space-between"
+              alignItems="center"
+              style={{ marginBottom: 10 }}
+            >
+              <Grid item xs={3}>
+                <InputLabel style={{ fontWeight: "bold" }} htmlFor={item.id}>
+                  {item.label}:
+                </InputLabel>
+              </Grid>
+              <Grid item>
+                {item.type === "select" && (
+                   <TextField
+                   size="small"
+                   id={item.id}
+                   select
+                   fullWidth
+                   value={form[item.id] || ""}
+                   onChange={(e) => handleFormChange(e, item.id)}
+                   variant="outlined"
+                   style={{ width: "200px" }}
+                 >
+                   {item?.options?.map((option) => (
+                     <MenuItem key={option.id} value={option.id}>
+                       {option.name}
+                     </MenuItem>
+                   ))}
+                 </TextField>
+                )}
+                {item.type === "text" && (
+                  <TextField
+                    size="small"
+                    fullWidth
+                    value={value || ""}
+                    onChange={(e) => handleFormChange(e, item.id)}
+                    inputProps={{
+                      maxLength: item.maxLength || 200,
+                    }}
+                    style={{ width: "100%" }}
+                    variant="outlined"
+                    id={item.id}
+                    type="text"
+                    name={item.id}
+                    autoComplete={item.id}
+                    autoFocus={index === 0}
+                  />
+                )}
+              </Grid>
             </Grid>
-            <Grid item>
-              <TextField
-                size="small"
-                fullWidth
-                value={form[item.id] || ""}
-                onChange={(e) => handleFormChange(e, item.id)}
-                inputProps={{
-                  maxLength: item.maxLength || 200
-                }}
-                style={{ width: "100%" }}
-                variant="outlined"
-                id={item.id}
-                type='text'
-                name={item.id}
-                autoComplete={item.id}
-                autoFocus={index === 0}
-              />
-            </Grid>
-          </Grid>
-        )})}
+          );
+        })}
       </List>
 
       <Grid
@@ -135,13 +160,14 @@ export default function DataViewFilter({
               variant="contained"
               style={{ fontWeight: "bold", marginRight: 14 }}
               color="default"
-              onClick={toggleDrawer(false)}
+              onClick={() => onFilter({})}
             >
               Clear
             </Button>
-            <Button
+            <CButton
               variant="contained"
               onClick={() => onFilter(form)}
+              loading={loading}
               style={{
                 fontWeight: "bold",
                 background:
@@ -150,7 +176,7 @@ export default function DataViewFilter({
               }}
             >
               Apply
-            </Button>
+            </CButton>
           </Grid>
         </Grid>
       </Grid>

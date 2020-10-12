@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
-import { isEmpty, omit } from "lodash";
+import { isEmpty, isNil, omit } from "lodash";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import {
@@ -108,14 +108,39 @@ export default function TreeViewComponent({
     v?.map((item) => {
       if (item.leafList.length === 0) {
         all = [...all, item.code];
-        return item.code;
+        return {
+          father: item.code,
+          childs: [],
+        };
       }
       all = [...all, item.code];
       return {
-        [item.code]: map(item.leafList),
+        father: item.code,
+        childs: map(item.leafList),
       };
     });
+
   map(permissions?.leafList);
+
+  let childrens = [];
+
+  const filter = (v, code) =>
+    v?.map((c) => {
+      if (c.father === code) {
+        if (isEmpty(c.childs)) {
+          childrens = [...childrens, c.father];
+        }
+        if (!isEmpty(c.childs)) {
+          childrens = [...childrens, c.father];
+          c.childs.map((i) => filter(c.childs, i.father));
+        }
+      } else {
+        filter(c.childs, code);
+      }
+    });
+
+  map(permissions?.leafList);
+
   const classes = useStyles();
   const [expanded, setExpanded] = useState([]);
   const [selected, setSelected] = useState({});
@@ -123,7 +148,6 @@ export default function TreeViewComponent({
     if (!isEmpty(values)) {
       let sel = {};
       values.map((v) => (sel = { ...sel, [v.code]: true }));
-      setExpanded(values.map((v) => v.code));
       setSelected(sel);
     }
   }, [values]);
@@ -131,17 +155,52 @@ export default function TreeViewComponent({
     setExpanded(nodeIds);
   };
 
+  const addParents = (value) =>
+    value.map((i) => {
+      const array = i.split(".");
+      const length = array.length - 1;
+      const sliced = array.slice(0, length);
+      const dash = array.slice(0, 1);
+      if (array.length === 3) {
+        childrens = [
+          ...childrens,
+          `${sliced.join(".")}.index`,
+          `${dash.join(".")}.dashboard`,
+        ];
+        return `${sliced.join(".")}.index`;
+      }
+    });
+
   const handleCheck = (e) => {
+    const inheritance = map(permissions?.leafList);
+    filter(inheritance, e.target.name);
+    addParents(childrens);
+    const selection = childrens.reduce((acc, curr) => {
+      return { ...acc, [curr]: true };
+    }, {});
     let value = {
       ...selected,
-      [e.target.name]: e.target.checked,
+      ...selection,
     };
+
     if (!e.target.checked) {
-      value = omit(value, [e.target.name]);
+      const n = e.target.name;
+      let omited = [e.target.name];
+
+      if (n.indexOf("dashboard") !== -1) {
+        omited = childrens;
+      }
+      if (n.indexOf("index") !== -1) {
+        omited = childrens.filter((c) => c.indexOf("dashboard") === -1);
+      }
+
+      value = omit(value, omited);
     }
     onChange(value);
     setSelected(value);
+    setExpanded(expanded);
   };
+
   const handleSelectAll = () => {
     setExpanded(all);
     const selection = all.reduce((acc, curr) => {
@@ -150,6 +209,7 @@ export default function TreeViewComponent({
     onChange(selection);
     setSelected(selection);
   };
+
   const handleClearAll = () => {
     setExpanded([]);
     setSelected({});
@@ -240,6 +300,7 @@ export default function TreeViewComponent({
           className={classes.root}
           style={{ marginTop: 10 }}
           defaultExpanded={[]}
+          disableSelection={true}
           defaultCollapseIcon={<ArrowDropDownIcon fontSize="large" />}
           defaultExpandIcon={<ArrowRightIcon fontSize="large" />}
           defaultEndIcon={<div style={{ width: 44 }} />}
