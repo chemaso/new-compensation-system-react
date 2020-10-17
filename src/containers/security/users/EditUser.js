@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { isNil, isEmpty, groupBy, uniq, uniqBy } from 'lodash'
 import { useParams } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { setLogOut } from "../../../actions/account";
+import { getPermissions } from "../../../actions/permissions";
+import { getUserById } from "../../../actions/users";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import UserForm from "../../../components/common/Form";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
@@ -12,67 +14,131 @@ import {
   Button,
   Divider,
   Switch,
-  InputLabel
+  InputLabel,
 } from "@material-ui/core";
 import Helmet from "../../../components/common/Helmet";
+import { useAccount } from "../../../hooks/user";
+import { getDepartments } from "../../../actions/departments";
+import { getUsers, deleteUser, putUser } from "../../../actions/users";
+import { getRoles } from "../../../actions/roles";
+import { enableUser, disableUser } from "../../../api/user";
+import CButton from "../../../components/common/ButtonWithLoading";
 
-const formInputs = [
-  {
-    label: "Identification",
-    id: "identification",
-    maxLength: 20,
-  },
-  {
-    label: "Login",
-    id: "login",
-    maxLength: 50,
-  },
-  {
-    label: "Name",
-    id: "name",
-    maxLength: 100,
-  },
-  {
-    label: "Email",
-    id: "email",
-    maxLength: 100,
-  },
-  {
-    label: "Department",
-    id: "department",
-    type: "checkbox-list",
-  },
-  {
-    label: "Profile",
-    id: "profile",
-    type: "multiselect",
-  },
-];
-
-const EditUser = ({ children, logOut, ...rest }) => {
-
+const EditUser = ({ children, departments, roles, editUser, fetchUser, fetchDepartments, fetchRoles, user, account, permissions, ...rest }) => {
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({ active: false });
   const params = useParams();
+  const { decrypt } = useAccount();
+
+  const userData = decrypt(account?.user);
+  useEffect(() => {
+    setLoading(true);
+    fetchDepartments(userData?.token, 0, 0, {}, true);
+    fetchRoles(userData?.token, 0, 0, {}, true);
+    fetchUser(userData?.token, params.id).finally(() => setLoading(false));
+  }, []);
+
+  const depts  = (isNil(departments) || isEmpty(departments)) ? [] : departments?.map((item) => ({
+    name: `${item.id} - ${item.name}`,
+    id: item.id,
+  }))
+
+  const formInputs = [
+    {
+      label: "Identification",
+      id: "dni",
+      maxLength: 20,
+    },
+    {
+      label: "Login",
+      id: "username",
+      maxLength: 50,
+    },
+    {
+      label: "Name",
+      id: "name",
+      maxLength: 100,
+    },
+    {
+      label: "Email",
+      id: "email",
+      maxLength: 100,
+    },
+    {
+      label: "Department",
+      id: "department",
+      type: "select",
+      options: depts
+    },
+    {
+      label: "Profile",
+      id: "roles",
+      type: "multiselect",
+      options: roles
+    },
+  ];
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      ...user,
+      department: user?.department?.id || "",
+      roles: uniqBy(user?.roles, 'id')
+    });
+  }, [user]);
+
   const handleForm = (v) => {
     setValues({
       ...values,
-      ...v
-    })
-  }
-  const handleActive = (e) => {
-    setValues({
-      ...values,
-      active: e.target.checked
-    })
-  }
+      ...v,
+    });
+  };
 
-  const checked = values?.active ? true : false
+  const checked = values?.active ? true : false;
+
+  const handleActive = (e) => {
+    setStatus(true)
+    const value = e?.target?.checked
+    if (!checked) {
+      enableUser(userData?.token, params.id)
+        .then(() =>  setValues({
+          ...values,
+          active: value
+        }))
+        .finally(() => setStatus(false))
+    }
+    else {
+      disableUser(userData?.token, params.id)
+      .then(() =>  setValues({
+        ...values,
+        active: value
+      }))
+      .finally(() => setStatus(false))
+    }
+   
+  };
+
   return (
     <>
       <Helmet title="Edit User" />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
+          const handleSubmit = () => {
+            setSubmitting(true)
+            const payload = {
+              ...values,
+              department: departments?.find((v) => v.id === values.department)
+            }
+            editUser(userData?.token, params?.id, payload)
+            .then(() => {
+              setSubmitting(false)
+              history.push('/security/user/index')
+            })
+            console.log(values, payload)
+          }
           return (
             <Grid justify="space-between" container style={{ marginRight: 20 }}>
               <Grid item xs={12} style={{ marginBottom: 20 }}>
@@ -82,14 +148,15 @@ const EditUser = ({ children, logOut, ...rest }) => {
                 <Divider />
                 <InputLabel
                   style={{ marginTop: 12, color: "black" }}
-                  htmlFor='active-user'
+                  htmlFor="active-user"
                 >
                   Active User
                 </InputLabel>
                 <Grid container alignItems="center" justify="flex-start">
                   <Grid item>No</Grid>
                   <Switch
-                    id='active-user'
+                    id="active-user"
+                    disabled={status}
                     checked={checked}
                     onChange={handleActive}
                     name="checkedB"
@@ -98,7 +165,12 @@ const EditUser = ({ children, logOut, ...rest }) => {
                   <Grid item>Yes</Grid>
                 </Grid>
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm formInputs={formInputs} onChange={handleForm} />
+                  {!loading ? <UserForm
+                    form={values}
+                    permissions={permissions}
+                    formInputs={formInputs}
+                    onChange={handleForm}
+                  /> : <DataViewSkeleton />}
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -116,19 +188,20 @@ const EditUser = ({ children, logOut, ...rest }) => {
                   >
                     Cancel
                   </Button>
-                  <Button
+                  <CButton
                     variant="contained"
+                    loading={submitting}
                     style={{
                       fontWeight: "bold",
                       color: "white",
                       background:
                         "linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)",
                     }}
-                    onClick={() => console.log('saving', values)}
+                    onClick={handleSubmit}
                     color="default"
                   >
                     Save Changes
-                  </Button>
+                  </CButton>
                 </Grid>
               </Grid>
             </Grid>
@@ -141,12 +214,22 @@ const EditUser = ({ children, logOut, ...rest }) => {
 
 const mapStateToProps = (state) => ({
   account: state.account,
+  departments: state?.departments?.departments,
+  roles: state?.roles?.roles,
+  user: state?.users?.user,
+  permissions: state?.permissions?.data,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
-      logOut: setLogOut,
+      fetchUser: getUserById,
+      editUser: putUser,
+      getPermission: getPermissions,
+      fetchUsers: getUsers,
+      fetchRoles: getRoles,
+      deleteUsers: deleteUser,
+      fetchDepartments: getDepartments,
     },
     dispatch
   );

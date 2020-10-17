@@ -1,7 +1,7 @@
 import { GET_ROLES, GET_ROLE, PUT_ROLE, POST_ROLE, DELETE_ROLE } from '../actionTypes'
 
 const initialState = {
-    roles: {},
+    roles: [],
     role: {}
 }
 const roles = (state = initialState, action) => {

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getRoles } from '../../../actions/roles'
-import { flatMap, isEmpty, isNil } from "lodash";
+import { flatMap, isEmpty, isNil, get as _get } from "lodash";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
 import DataViewFilter from "../../../components/common/dataView/filter";
@@ -15,81 +14,83 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Helmet from "../../../components/common/Helmet";
 import { useAccount } from "../../../hooks/user";
-import { getDepartments } from '../../../actions/departments'
+import { getDepartments } from "../../../actions/departments";
+import { getUsers, deleteUser } from "../../../actions/users";
+import { getRoles } from "../../../actions/roles";
 
-function createData(id, name, fat, carbs, protein, actions) {
-  return { id, name, fat, carbs, protein, actions };
-}
-
-const rows = [
-  createData(4324, "Pedro Perez", 305, 3.7, 67, 4.3, true),
-  createData(42312, "Jose Lue", 452, 25.0, 51, 4.9, true),
-  createData(5345, "Carlos Lc", 262, 16.0, 24, 6.0, true),
-  createData(54354, "Joua Chas", 159, 6.0, 24, 4.0, true),
-  createData(654645, "Gingerbread Pel", 356, 16.0, 49, 3.9, true),
-  createData(55234, "Honeycomb Cas", 408, 3.2, 87, 6.5, true),
-  createData(42341, "Cash Jonh", 237, 9.0, 37, 4.3, true),
-  createData(7657, "Jelly Pepe", 375, 0.0, 94, 0.0, true),
-  createData(324, "Carlos Julio", 518, 26.0, 65, 7.0, true),
-  createData(8789, "Daniel Marque", 392, 0.2, 98, 0.0, true),
-  createData(8679, "Marcos Paz", 318, 0, 81, 2.0, true),
-  createData(1235, "Daniel Ortega", 360, 19.0, 9, 37.0, true),
-  createData(474, "Oreo Loreo", 437, 18.0, 63, 4.0, true),
-];
-
-const User = ({ children, logOut, account,  setPermissions, permissions, roles, departments, fetchRoles, fetchDepartments, ...rest }) => {
+const User = ({
+  children,
+  logOut,
+  account,
+  setPermissions,
+  permissions,
+  users,
+  roles,
+  departments,
+  deleteUsers,
+  fetchRoles,
+  fetchUsers,
+  fetchDepartments,
+  ...rest
+}) => {
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
   const [openDelete, setOpenDelete] = useState(false);
+  const [filter, setFilter] = useState({});
+  const [filterLoading, setFilterLoading] = useState(false);
 
   const { decrypt } = useAccount();
-  
+
   const user = decrypt(account?.user);
 
   useEffect(() => {
-    fetchDepartments(user?.token, 0, 0, {}, true)
-    fetchRoles(user?.token, 0, 0, {}, true)
-  }, [])
+    fetchDepartments(user?.token, 0, 0, {}, true);
+    fetchRoles(user?.token, 0, 0, {}, true);
+    setLoading(true);
+    fetchUsers(user?.token, 0, 5, filter).finally(() => setLoading(false));
+  }, []);
+  const depts  = (isNil(departments) || isEmpty(departments)) ? [] : departments?.map((item) => ({
+    name: `${item.id} - ${item.name}`,
+    id: item.id,
+  }))
   const filters = [
     {
-      id: "id",
-      type: 'text',
+      id: "dni",
+      type: "text",
       label: "Identification",
       maxLength: 20,
     },
     {
-      id: "login",
-      type: 'text',
+      id: "username",
+      type: "text",
       noSpaces: true,
-      label: "Login",
+      label: "Username",
       maxLength: 50,
     },
     {
       id: "name",
-      type: 'text',
+      type: "text",
       label: "Name",
       maxLength: 100,
     },
     {
       id: "email",
-      type: 'text',
+      type: "text",
       noSpaces: true,
       label: "Email",
       maxLength: 50,
     },
     {
       id: "profile",
-      type: 'select',
-      options: roles?.content,
+      type: "select",
+      options: roles,
       label: "Profile",
     },
     {
       id: "department",
-      type: 'select',
-      options: departments?.content?.map((item) => ({
-        name: `${item.id} - ${item.name}`,
-        id: item.id,
-      })),
+      type: "select",
+      options: depts,
       label: "Department",
     },
   ];
@@ -100,13 +101,41 @@ const User = ({ children, logOut, account,  setPermissions, permissions, roles, 
       label: "ID",
     },
     { id: "name", label: "Name" },
-    { id: "lastName", label: "Last Name" },
+    { id: "username", label: "Username" },
     { id: "email", label: "Email" },
-    { id: "login", label: "Login" },
     { id: "actions", label: "Actions" },
   ];
   const handleFilter = (form) => {
-    console.log(form);
+    setFilterLoading(true);
+    setFilter(form);
+    const page = users?.number;
+    const size = users?.numberOfElements < 5 ? 5 : users?.numberOfElements;
+    fetchUsers(user?.token, page, size, form).then(() => {
+      setFilterLoading(false);
+      setFilterOpen(false);
+    });
+  };
+  const rows = users?.content?.map((item) => {
+    return {
+      id: item.id,
+      name: item.name,
+      username: item.username,
+      email: item.email,
+      actions: true,
+    };
+  });
+
+  const handleTableChange = (values) => {
+    const page = values.page;
+    const size = values.size || users.size;
+    fetchUsers(user?.token, page, size, filter);
+  };
+
+  const handleDeleteRow = () => {
+    setOpenDelete(false);
+    deleteUsers(user?.token, deleteId).then(() =>
+      fetchUsers(user?.token, 0, users.size, filter)
+    );
   };
   return (
     <>
@@ -114,7 +143,6 @@ const User = ({ children, logOut, account,  setPermissions, permissions, roles, 
       <MasterLayout
         loading={false}
         render={({ menuItems, history }) => {
-        
           const handleRenderActions = ({ values }) => {
             const path = history.location.pathname;
             const current = flatMap(menuItems, "subcontent").find(
@@ -143,7 +171,13 @@ const User = ({ children, logOut, account,  setPermissions, permissions, roles, 
               render = [
                 ...render,
                 <Tooltip title="Delete" arrow>
-                  <IconButton size="small" onClick={() => setOpenDelete(true)}>
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      setDeleteId(values.id);
+                      setOpenDelete(true);
+                    }}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>,
@@ -178,17 +212,28 @@ const User = ({ children, logOut, account,  setPermissions, permissions, roles, 
               </Grid>
               <Grid item xs={12}>
                 <DataTable
-                  rows={rows}
+                  rows={rows || []}
                   headCells={headCells}
-                  renderActions={(e) => handleRenderActions(e)}
+                  size={users.numberOfElements || 0}
+                  page={users.number || 0}
+                  sortable={false}
+                  onTableChange={handleTableChange}
+                  total={users.totalElements || 0}
+                  totalPages={users.totalPages || 0}
+                  lastPage={users.last}
+                  firstPage={users.first}
+                  renderActions={handleRenderActions}
                 />
               </Grid>
-              {roles && departments && <DataViewFilter
-                onFilter={handleFilter}
-                filterOpen={filterOpen}
-                setFilterOpen={setFilterOpen}
-                filters={filters}
-              />}
+              {users && departments && (
+                <DataViewFilter
+                  onFilter={handleFilter}
+                  filterOpen={filterOpen}
+                  loading={filterLoading}
+                  setFilterOpen={setFilterOpen}
+                  filters={filters}
+                />
+              )}
               <NotificationsModal
                 open={openDelete}
                 handleModal={setOpenDelete}
@@ -205,9 +250,7 @@ const User = ({ children, logOut, account,  setPermissions, permissions, roles, 
                   {
                     label: "Continue",
                     style: "primary",
-                    action: () => {
-                      setOpenDelete(false);
-                    },
+                    action: handleDeleteRow,
                   },
                 ]}
               />
@@ -223,14 +266,18 @@ const mapStateToProps = (state) => ({
   account: state.account,
   departments: state?.departments?.departments,
   roles: state?.roles?.roles,
+  users: state?.users?.users,
   permissions: state?.permissions?.data,
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({
-    fetchRoles: getRoles,
-    fetchDepartments: getDepartments
-  },
+  return bindActionCreators(
+    {
+      fetchUsers: getUsers,
+      fetchRoles: getRoles,
+      deleteUsers: deleteUser,
+      fetchDepartments: getDepartments,
+    },
     dispatch
   );
 };

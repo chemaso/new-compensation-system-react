@@ -1,7 +1,7 @@
 import { GET_DEPARTMENTS, GET_DEPARTMENT, PUT_DEPARTMENT, POST_DEPARTMENT, DELETE_DEPARTMENT } from '../actionTypes'
 
 const initialState = {
-    departments: {},
+    departments: [],
     department: {}
 }
 const departments = (state = initialState, action) => {

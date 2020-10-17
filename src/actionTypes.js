@@ -17,6 +17,12 @@ export const PUT_ROLE = 'PUT_ROLE'
 export const POST_ROLE = 'POST_ROLE'
 export const DELETE_ROLE = 'DELETE_ROLE'
 
+export const GET_USERS = 'GET_USERS'
+export const GET_USER = 'GET_USER'
+export const PUT_USER = 'PUT_USER'
+export const POST_USER = 'POST_USER'
+export const DELETE_USER = 'DELETE_USER'
+
 export const GET_DEPARTMENTS = 'GET_DEPARTMENTS'
 export const GET_DEPARTMENT = 'GET_DEPARTMENT'
 export const PUT_DEPARTMENT = 'PUT_DEPARTMENT'
