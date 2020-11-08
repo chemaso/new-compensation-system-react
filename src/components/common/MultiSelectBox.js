@@ -11,6 +11,7 @@ import { Grid, IconButton, TextField, InputAdornment } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import CloseIcon from "@material-ui/icons/Close";
+import { t } from '../../i18n'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -102,13 +103,13 @@ export default function MultiSelectBox({ options = [], onChange, values }) {
           variant="outlined"
           size="small"
           id="available"
-          placeholder="Filter Available"
+          placeholder={t('common.multi.filterAvailable',"Filter Available")}
           name="available"
           // autoComplete={item.id}
         />
         <Paper variant="outlined" style={{ minHeight: 200 }}>
           <FormControl component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Available</FormLabel>
+            <FormLabel component="legend">{t('common.multi.available',"Available")}</FormLabel>
             <FormGroup>
               {filtered(available, "go").map((item) => (
                 <FormControlLabel
@@ -185,13 +186,13 @@ export default function MultiSelectBox({ options = [], onChange, values }) {
           variant="outlined"
           size="small"
           id="available"
-          placeholder="Filter Selected"
+          placeholder={t('common.multi.filterSelected',"Filter Selected")}
           name="available"
           // autoComplete={item.id}
         />
         <Paper variant="outlined" style={{ minHeight: 200 }}>
           <FormControl component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Selected</FormLabel>
+            <FormLabel component="legend">{t('common.multi.selected',"Selected")}</FormLabel>
             <FormGroup>
               {filtered(selected, "back").map((item) => (
                 <FormControlLabel
