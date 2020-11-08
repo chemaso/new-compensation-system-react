@@ -18,7 +18,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { ListItems } from '../dashboard/listItems'
 import BannerLogo from '../../assets/images/sice-logo.png'
 import { useTheme } from '@material-ui/core/styles';
-import Copyright from '../common/Copyright'
 import { setLogOut } from '../../actions/account'
 import { PersistorContext } from '../../context/persistorContext'
 import { useHistory } from "react-router-dom";
@@ -133,7 +132,7 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems: m
        {!loading ? MenuItems() : <MenuSkeleton items={6} />}
        </Drawer>
       )}
-      <main className={classes.content}>
+      <main id="master-content" className={classes.content}>
         <div className={classes.appBarSpacer} />
         <MasterLayoutBanner classes={classes} items={menuItems} isMobile={isMobile} loading={loading} />
         <Container maxWidth="lg" className={classes.container}>
@@ -142,7 +141,7 @@ const MasterLayout = ({ children, render, logOut, account, loading, menuItems: m
           </Grid>
         </Container>
       </main>
-      <MasterLayoutAside user={user} open={aside} onAsideOpen={handleAsideOpen} onLogOut={() => logOut(purge, history)} />
+      <MasterLayoutAside user={user} open={aside} onAsideOpen={handleAsideOpen} onLogOut={() => logOut(purge, user)} />
     </div>
   );
 }

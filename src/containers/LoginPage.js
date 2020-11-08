@@ -8,6 +8,7 @@ import LoginForm from '../components/account/LoginForm'
 import ExternalAccountWrapper from '../components/account/ExternalAccountWrapper'
 import Helmet from '../components/common/Helmet'
 import { setLoggedIn } from '../actions/account'
+import { t } from '../i18n'
 
 const LoginPage = ({ getLogin, history, match }) => {
   const [formValues, setFormValues] = useState({})
@@ -36,7 +37,7 @@ const LoginPage = ({ getLogin, history, match }) => {
     }
   }
   return (
-    <ExternalAccountWrapper title='Welcome to SICE' >
+    <ExternalAccountWrapper title={t('login.title', "Welcome to SICE")} >
       <Helmet title="Login" />
       <LoginForm
         onChange={handleFormChange}

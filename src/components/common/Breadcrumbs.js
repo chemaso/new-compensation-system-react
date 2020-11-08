@@ -6,6 +6,7 @@ import {
   useHistory,
 } from "react-router-dom";
 import HomeIcon from '@material-ui/icons/Home';
+import { t } from '../../i18n'
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -32,13 +33,14 @@ export const MasterLayoutBreadcrumbs = ({ levels = [] }) => {
   return (
     <Breadcrumbs separator={<span style={{ color: 'white'}}>/</span>} aria-label="breadcrumb" style={{ marginLeft: 20 }}>
       <StyledBreadcrumb
-        label="Home"
+        label={t('common.home', "Home")}
         icon={<HomeIcon fontSize="small" style={{ color: 'white' }} />}
         onClick={() =>handleClick('')}
       />
       {levels.map((item) => (
         <StyledBreadcrumb
-          label={item.title}
+          key={item.title}
+          label={t(`common.${item.title.toLowerCase()}`, item.title)}
           onClick={() => handleClick(item.route)}
         />
       ))}

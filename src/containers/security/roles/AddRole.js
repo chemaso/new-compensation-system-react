@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { isEmpty, isNil } from 'lodash'
 import { getPermissions } from "../../../actions/permissions";
 import { postRole } from "../../../actions/roles";
-import { useParams } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { setLogOut } from "../../../actions/account";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import UserForm from "../../../components/common/Form";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
@@ -13,20 +12,23 @@ import { useAccount } from "../../../hooks/user";
 
 import Helmet from "../../../components/common/Helmet";
 import CButton from "../../../components/common/ButtonWithLoading";
+import { t } from '../../../i18n'
 
 const formInputs = [
   {
-    label: "Name",
+    label: t("roles.addRole.name", "Name"),
     id: "name",
+    required: true,
     maxLength: 100,
   },
   {
-    label: "Description",
-    id: "Description",
+    label: t("roles.addRole.description", "Description"),
+    id: "description",
+    required: true,
     maxLength: 100,
   },
   {
-    label: "Permissions",
+    label: t("roles.addRole.permissions", "Permissions"),
     id: "permissions",
     type: "treeview",
   },
@@ -43,14 +45,15 @@ const AddRole = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [values, setValues] = useState({});
-  const params = useParams();
   const { decrypt } = useAccount();
   const user = decrypt(account?.user);
   useEffect(() => {
     setLoading(true)
     setPermissions(user?.token)
         .finally(()=> setLoading(false));
+         // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleForm = (e, f) => {
@@ -79,19 +82,43 @@ const AddRole = ({
 
   map(permissions?.leafList);
 
+
+  const handleErrors = (values) => {
+    const requiredFields = formInputs.filter((item) => item.required)
+    let err = {}
+    requiredFields.map((v) => {
+      if (v.id === 'email') {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          const val  = values[v.id]
+          if (!regex.test(val)) {
+            err = { ...err, [v.id]: t("roles.addRole.error.email", "- Incorrect format")}
+            setErrors(err)
+          }
+      }
+      const vals = typeof values[v.id] === 'number' ? values[v.id].toString() : values[v.id]
+      if (isNil(values[v.id]) || isEmpty(vals)) {
+        err = { ...err, [v.id]:  t("roles.addRole.error.required", "Is required")}
+        setErrors(err)
+      }
+      return err
+    })
+    return err
+  }
+
   return (
     <>
-      <Helmet title="Add Role" />
+      <Helmet title={t("roles.addRole.helmet", "Add Role")} />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
+          const va = isNil(values?.permissions) ? {} : values?.permissions
           const handleSubmit = () => {
-            let selection = all
-            .map((i) => ({
-              code: i.code,
-              description: i.description,
-            }))
-            .filter((v) => values?.permissions[v.code]);
+            const err = handleErrors(values)
+            if (isEmpty(err)) {
+            let selection = all?.map((i) => ({
+              code: i?.code,
+              description: i?.description,
+            })).filter((v) => va[v?.code]);
             const payload = {
               name: values?.name || '',
               description: values?.description || '',
@@ -103,18 +130,22 @@ const AddRole = ({
                   setSubmitting(false)
                   history.push('/security/role/index')
                 })
+            }
+            else {
+              document.getElementById("master-content").scrollTo(0,0)
+            }
           };
           return loading ? (
             <DataViewSkeleton />
           ) : (
             <Grid justify="space-between" container style={{ marginRight: 20 }}>
               <Grid item xs={12} style={{ marginBottom: 20 }}>
-                <Typography variant="h5">Add New Role:</Typography>
+                <Typography variant="h5">{t("roles.addRole.title", "Add Role")}</Typography>
               </Grid>
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                  <UserForm permissions={permissions} formInputs={formInputs} onChange={handleForm} />
+                  <UserForm permissions={permissions} errors={errors} formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -130,7 +161,7 @@ const AddRole = ({
                     onClick={() => history.replace("/security/role/index")}
                     color="default"
                   >
-                    Cancel
+                    {t("roles.addRole.cancel", "Cancel")}
                   </Button>
                   <CButton
                     variant="contained"
@@ -144,7 +175,7 @@ const AddRole = ({
                     onClick={handleSubmit}
                     color="default"
                   >
-                    Save Changes
+                     {t("roles.addRole.save", "Save Role")}
                   </CButton>
                 </Grid>
               </Grid>

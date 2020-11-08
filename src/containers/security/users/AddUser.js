@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { isNil, isEmpty, groupBy, uniq, uniqBy } from 'lodash'
-import { useParams } from "react-router-dom";
+import { isNil, isEmpty } from 'lodash'
 import { bindActionCreators } from "redux";
 import { getPermissions } from "../../../actions/permissions";
 import { getUserById } from "../../../actions/users";
@@ -13,28 +12,27 @@ import {
   Typography,
   Button,
   Divider,
-  Switch,
-  InputLabel,
 } from "@material-ui/core";
 import Helmet from "../../../components/common/Helmet";
 import { useAccount } from "../../../hooks/user";
 import { getDepartments } from "../../../actions/departments";
 import { getUsers, deleteUser, postUser } from "../../../actions/users";
 import { getRoles } from "../../../actions/roles";
-import { enableUser, disableUser } from "../../../api/user";
 import CButton from "../../../components/common/ButtonWithLoading";
+import { t } from '../../../i18n'
 
 const AddUser = ({ children, departments, roles, addUser, fetchUser, fetchDepartments, fetchRoles, user, account, permissions, ...rest }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({ active: true });
-  const params = useParams();
+  const [errors, setErrors] = useState({});
   const { decrypt } = useAccount();
 
   const userData = decrypt(account?.user);
   useEffect(() => {
     fetchDepartments(userData?.token, 0, 0, {}, true);
     fetchRoles(userData?.token, 0, 0, {}, true);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const depts  = (isNil(departments) || isEmpty(departments)) ? [] : departments?.map((item) => ({
@@ -44,34 +42,44 @@ const AddUser = ({ children, departments, roles, addUser, fetchUser, fetchDepart
 
   const formInputs = [
     {
-      label: "Identification",
+      label: t("users.addUser.identification", "ID"),
       id: "dni",
+      required: true,
       maxLength: 20,
     },
     {
-      label: "Login",
+      label: t("users.addUser.login", "Login"),
+      onlyLowerCase: true,
       id: "username",
+      noSpaces: true,
+      required: true,
       maxLength: 50,
     },
     {
-      label: "Name",
+      label: t("users.addUser.name", "Name"),
       id: "name",
+      required: true,
       maxLength: 100,
     },
     {
-      label: "Email",
+      label: t("users.addUser.email", "Email"),
       id: "email",
+      noSpaces: true,
+      required: true,
+      onlyLowerCase: true,
       maxLength: 100,
     },
     {
-      label: "Department",
+      label: t("users.addUser.department", "Department"),
       id: "department",
       type: "select",
+      required: true,
       options: depts
     },
     {
-      label: "Profile",
+      label: t("users.addUser.profile", "Profile"),
       id: "roles",
+      required: true,
       type: "multiselect",
       options: roles
     },
@@ -84,37 +92,69 @@ const AddUser = ({ children, departments, roles, addUser, fetchUser, fetchDepart
     });
   };
 
-  const checked = values?.active ? true : false;
+  const handleErrors = (values) => {
+    const requiredFields = formInputs.filter((item) => item.required)
+    let err = {}
+    requiredFields.map((v) => {
+      if (v.id === 'email') {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          const val  = values[v.id]
+          if (!regex.test(val)) {
+            err = { ...err, [v.id]: t(
+              "users.addUser.error.email",
+              "- Incorrect Format"
+            )}
+            setErrors(err)
+          }
+      }
+      const vals = typeof values[v.id] === 'number' ? values[v.id].toString() : values[v.id]
+      if (isNil(values[v.id]) || isEmpty(vals)) {
+        err = { ...err, [v.id]: t(
+          "users.addUser.required",
+          "Is Required"
+        )}
+        setErrors(err)
+      }
+      return err
+    })
+    return err
+  }
 
   return (
     <>
-      <Helmet title="Add User" />
+      <Helmet title={t("users.addUser.helmet", "Add User")} />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
           const handleSubmit = () => {
-            setSubmitting(true)
-            const payload = {
-              ...values,
-              department: departments?.find((v) => v.id === values.department)
+            const err = handleErrors(values)
+            if (isEmpty(err)) {
+              setSubmitting(true)
+              const payload = {
+                ...values,
+                department: departments?.find((v) => v.id === values.department)
+              }
+              addUser(userData?.token, payload)
+              .then(() => {
+                setSubmitting(false)
+                history.push('/security/user/index')
+              })
             }
-            addUser(userData?.token, payload)
-            .then(() => {
-              setSubmitting(false)
-              history.push('/security/user/index')
-            })
-            console.log(values, payload)
+            else {
+              document.getElementById("master-content").scrollTo(0,0)
+            }
           }
           return (
             <Grid justify="space-between" container style={{ marginRight: 20 }}>
               <Grid item xs={12} style={{ marginBottom: 20 }}>
-                <Typography variant="h5">Add New User:{params.id}</Typography>
+                <Typography variant="h5">{t("users.addUser.title", "Add User")}</Typography>
               </Grid>
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
                   {!loading ? <UserForm
                     form={values}
+                    errors={errors}
                     permissions={permissions}
                     formInputs={formInputs}
                     onChange={handleForm}
@@ -134,7 +174,7 @@ const AddUser = ({ children, departments, roles, addUser, fetchUser, fetchDepart
                     onClick={() => history.replace("/security/user/index")}
                     color="default"
                   >
-                    Cancel
+                    {t('users.addUser.cancel', 'Cancel')}
                   </Button>
                   <CButton
                     variant="contained"
@@ -148,7 +188,7 @@ const AddUser = ({ children, departments, roles, addUser, fetchUser, fetchDepart
                     onClick={handleSubmit}
                     color="default"
                   >
-                    Save Changes
+                    {t('users.addUser.continue', 'Save Changes')}
                   </CButton>
                 </Grid>
               </Grid>

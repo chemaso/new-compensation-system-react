@@ -11,6 +11,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import IconButton from "@material-ui/core/IconButton";
 import Icon from '../common/Icon'
+import { t } from '../../i18n'
 
 export const ListItems = ({ items, history }) => {
   const [selected, setSelected] = useState("Dashboard");
@@ -43,6 +44,7 @@ export const ListItems = ({ items, history }) => {
     }
     setSelected(titleVal[0]);
     setSubSelected("");
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, pathname]);
   const onChange = (value, { section, route }) => {
     const path = route.charAt(0) === "/" ? route : `/${route}`;
@@ -61,7 +63,7 @@ export const ListItems = ({ items, history }) => {
       {items?.map((item) => {
         const isSelected = selected === item.title;
         return (
-          <>
+          <div key={item.title}>
             <ListItem
               key={item.title}
               button
@@ -77,7 +79,7 @@ export const ListItems = ({ items, history }) => {
               }}
             >
               <ListItemIcon>{Icon(item.route)}</ListItemIcon>
-              <ListItemText primary={item.title} style={{ color: "white" }} />
+              <ListItemText primary={t(`common.${item.title.toLowerCase()}`, item.title)} style={{ color: "white" }} />
               {!isEmpty(item.subcontent) && (
                 <IconButton>
                   {isSelected ? (
@@ -94,6 +96,7 @@ export const ListItems = ({ items, history }) => {
                   item.subcontent.filter((v) => v.title === subSelected)
                 );
                 const subSelectionValue = val.title === subSelected;
+
                 return (
                   <Collapse
                     key={val.title}
@@ -121,7 +124,7 @@ export const ListItems = ({ items, history }) => {
                           {Icon(val.route)}
                         </ListItemIcon>
                         <ListItemText
-                          primary={val.title}
+                          primary={t(`common.${val.title.toLowerCase()}`, val.title)}
                           style={{ color: "white" }}
                         />
                       </ListItem>
@@ -129,7 +132,7 @@ export const ListItems = ({ items, history }) => {
                   </Collapse>
                 );
               })}
-          </>
+          </div>
         );
       })}
     </div>

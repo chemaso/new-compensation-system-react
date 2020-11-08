@@ -1,18 +1,20 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { get, isEmpty, isNil } from 'lodash'
-import { useHistory, useLocation } from "react-router-dom";
 import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '../../hooks/user'
-import { setExpiredSession } from '../../actions/account'
+import { setExpiredSession, setRefreshToken, setAlreadyExpired } from '../../actions/account'
 import ExpirationModal from '../common/ExpiratonModal'
+import { PersistorContext } from '../../context/persistorContext'
+import {
+  useHistory,
+} from "react-router-dom";
 
 export const SessionWrapper = () => {
   const [counter, setCounter] = useState('')
-    const history = useHistory()
     const [open, setOpen] = useState(false)
     const dispatch = useDispatch()
-    const location = useLocation()
+    const history = useHistory()
     let user = useSelector(state => get(state, 'account.user', '{}'))
     const isAuth = !isEmpty(user)
     const { decrypt } = useAccount()
@@ -20,6 +22,7 @@ export const SessionWrapper = () => {
       user = decrypt(user)
     }
 
+    const { purge } = useContext(PersistorContext)
     useEffect(() => {
         const current = moment()
 
@@ -31,7 +34,9 @@ export const SessionWrapper = () => {
         const isExpired = moment(expiresValue).unix() <= current.unix()
 
         // Set the initial count down value
-        setCounter(moment(expiresValue).diff(current, 'seconds')) 
+        if (counter === '') {
+          setCounter(moment(expiresValue).diff(current, 'seconds')) 
+        }
 
         // Set expiration modal
 
@@ -42,21 +47,23 @@ export const SessionWrapper = () => {
         // Purge session an return to login
 
         if (open && isExpired) {
-          dispatch(setExpiredSession(setOpen))
+          dispatch(setAlreadyExpired(purge, history, setOpen))
         }
+         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
     useEffect(() => {
       if (open && counter > 0) {
         setTimeout(() => setCounter(counter - 1), 1000);
       }
+       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [counter, open])
     const handleModal = (value) => {
       if (value === 'out') {
-        dispatch(setExpiredSession(setOpen))
+        dispatch(setExpiredSession(purge, user, setOpen))
       }
       if (value === 'continue') {
-        //dispatch the token renewer
+        dispatch(setRefreshToken(user, setOpen))
       }
     }
     return (

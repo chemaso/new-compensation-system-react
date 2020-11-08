@@ -4,13 +4,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
-import { Grid, Typography, ButtonGroup, Button } from "@material-ui/core";
+import { Grid, Typography, Button } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import CButton from "../ButtonWithLoading";
+import { t } from '../../../i18n'
 
 const useStyles = makeStyles({
   list: {
@@ -67,7 +68,7 @@ export default function DataViewFilter({
       >
         <Grid item>
           <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            Filters
+            {t('common.filter.title','Filters')}
           </Typography>
         </Grid>
         <Grid>
@@ -87,10 +88,11 @@ export default function DataViewFilter({
         }}
       >
         {filters.map((item, index) => {
-          const value = item.noSpaces ? form[item.id]?.replace(/\s+/g, '') : form[item.id]
+          const value = item?.noSpaces ? form[item.id]?.replace(/\s+/g, '') : form[item.id]
           return (
             <Grid
               container
+              key={index}
               justify="space-between"
               alignItems="center"
               style={{ marginBottom: 10 }}
@@ -104,11 +106,11 @@ export default function DataViewFilter({
                 {item.type === "select" && (
                    <TextField
                    size="small"
-                   id={item.id}
+                   id={item?.id}
                    select
                    fullWidth
-                   value={form[item.id] || ""}
-                   onChange={(e) => handleFormChange(e, item.id)}
+                   value={form[item?.id] || ""}
+                   onChange={(e) => handleFormChange(e, item?.id)}
                    variant="outlined"
                    style={{ width: "200px" }}
                  >
@@ -162,7 +164,7 @@ export default function DataViewFilter({
               color="default"
               onClick={() => onFilter({})}
             >
-              Clear
+               {t('common.filter.cancel','Clear')}
             </Button>
             <CButton
               variant="contained"
@@ -175,7 +177,7 @@ export default function DataViewFilter({
                 color: "white",
               }}
             >
-              Apply
+               {t('common.filter.continue','Apply')}
             </CButton>
           </Grid>
         </Grid>

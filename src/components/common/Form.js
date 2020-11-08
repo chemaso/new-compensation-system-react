@@ -45,12 +45,16 @@ const Form = ({
   return (
     <>
       {formInputs.map((item) => {
+        const error = errors[item.id];
         if (item.type === "treeview") {
           return (
             <Grid xs={12}>
               <TreeView
                 permissions={permissions}
+                error={!isNil(error)}
+                helperText={!isNil(error) ? `${item.label} ${error}.` : ""}
                 isEdit={item.isEdit}
+                required={item.required}
                 values={form[item.id] || []}
                 item={item}
                 onChange={(v) => handleForm(v, item.id)}
@@ -59,16 +63,18 @@ const Form = ({
           );
         }
         if (item.type === "multiselect") {
-          console.log()
           return (
             <Grid xs={12} style={{ marginRight: 20 }}>
               <InputLabel
                 style={{ marginTop: 12, marginBottom: 12, color: "black" }}
                 htmlFor={item.id}
+                required={item.required}
               >
                 {item.label}
               </InputLabel>
+             {!isNil(error) && <span style={{ color: '#f44336'}}>{item.label} {error}.</span>}
               <MultiSelectBox
+                required={item.required}
                 values={form[item.id] || []}
                 options={item?.options}
               
@@ -80,29 +86,34 @@ const Form = ({
         if (item.type === "checkbox-list") {
           return (
             <CheckboxList
+              required={item.required}
               options={options}
               item={item}
               onChange={(v) => handleForm(v, item.id)}
             />
           );
         }
-
-        const value = item.noSpaces
-          ? form[item.id]?.replace(/\s+/g, "")
-          : form[item.id];
-        const error = errors[item.id];
+        let value = form[item.id]
+        if (item.noSpaces) {
+          value = value?.replace(/\s+/g, "")
+        }
+        if (item.onlyLowerCase) {
+          value = value?.toLowerCase()
+        }
         if (item.type === "select") {
-          console.log(form)
           return (
             <Grid item lg={5} sm={5} xs={12} style={{ marginRight: 30 }}>
               <InputLabel
                 style={{ marginTop: 12, color: "black" }}
                 htmlFor={item.id}
+                required={item.required}
               >
                 {item.label}
               </InputLabel>
               <TextField
                 size="small"
+                error={!isNil(error)}
+                required={item.required}
                 style={{
                   marginTop: 5,
                   background: item.disabled ? "#ececec" : "white",
@@ -115,6 +126,7 @@ const Form = ({
                 InputLabelProps={{
                   shrink: false,
                 }}
+                helperText={!isNil(error) ? `${item.label} ${error}.` : ""}
                 onChange={(e) => handleForm(e.target.value, item.id)}
                 variant="outlined"
               >
@@ -132,6 +144,7 @@ const Form = ({
             <InputLabel
               style={{ marginTop: 12, color: "black" }}
               htmlFor={item.id}
+              required={item.required}
             >
               {item.label}
             </InputLabel>
@@ -141,9 +154,9 @@ const Form = ({
                 background: item.disabled ? "#ececec" : "white",
               }}
               margin="normal"
-              required
-              error={error}
-              helperText={!isNil(error) ? `${item.label} is required.` : ""}
+              required={item.required}
+              error={!isNil(error)}
+              helperText={!isNil(error) ? `${item.label} ${error}.` : ""}
               disabled={item.disabled}
               value={value}
               fullWidth

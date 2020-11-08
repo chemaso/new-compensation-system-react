@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -25,8 +25,9 @@ export default function NotificationsModal({
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          {buttons.map((item) => (
+          {buttons.map((item, index) => (
             <Button
+              key={index}
               style={item.style === 'secondary' ? { fontWeight: 'bold'} : { fontWeight: 'bold', color: '#ff600d'}}
               onClick={item.action}
               color="default"

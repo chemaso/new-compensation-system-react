@@ -14,6 +14,8 @@ import {
   POST_DEPARTMENT,
   DELETE_DEPARTMENT,
 } from "../actionTypes";
+import { useAccount } from '../hooks/user'
+import { t } from '../i18n'
 
 export const getDepartments = (token, page, size, filter, all) => {
   const endpoint = all ? getAll : get
@@ -28,17 +30,19 @@ export const getDepartments = (token, page, size, filter, all) => {
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -57,17 +61,19 @@ export const getDepartmentById = (token, id) => {
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -85,23 +91,25 @@ export const deleteDepartment = (token, id) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The Department was successfully deleted.",
+          notifications: t('action.department.delete', "The Department was successfully deleted."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -119,23 +127,25 @@ export const putDepartment = (token, id, payload) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The Department was successfully updated.",
+          notifications: t('action.department.update', "The Department was successfully updated."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -153,23 +163,25 @@ export const postDepartment = (token, payload) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The Department was successfully created.",
+          notifications: t('action.department.create', "The Department was successfully created."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;

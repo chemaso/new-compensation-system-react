@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { setLogOut } from "../actions/account";
 import MasterLayout from "../components/layout/MasterLayout";
 import { DashboardSkeleton } from "../components/common/Skeletons";
 import CommonCard from "../components/common/CommonCards";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Helmet from "../components/common/Helmet";
-
+import { t } from '../i18n'
 const DashboardPage = ({ children, logOut, ...rest }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
 
   return (
     <>
-      <Helmet title="Dashboard" />
+      <Helmet title={t('dashboard.title', 'Dashboard')} />
       <MasterLayout
         loading={loading}
         render={({ user, menuItems, history }) => {

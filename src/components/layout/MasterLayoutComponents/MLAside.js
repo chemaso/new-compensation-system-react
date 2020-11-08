@@ -4,14 +4,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 import Avatar from '@material-ui/core/Avatar';
 import { Typography } from "@material-ui/core";
 import CButton from '../../common/ButtonWithLoading'
+import { t } from '../../../i18n'
 
 const useStyles = makeStyles({
   list: {
@@ -74,7 +70,7 @@ const MasterLayoutAside = ({ user, open, onAsideOpen, onLogOut }) => {
                 </Typography>
             </Avatar>
             </div>
-            <Typography style={{ fontWeight: 'bold', textAlign: 'center',  marginTop: 10 }}>Welcome, {user.username}.</Typography>
+            <Typography style={{ fontWeight: 'bold', textAlign: 'center',  marginTop: 10 }}>{t('master.aside.welcome','Welcome')}, {user.username}.</Typography>
             {list('right')}
             <CButton
                 onClick={onLogOut}
@@ -83,7 +79,7 @@ const MasterLayoutAside = ({ user, open, onAsideOpen, onLogOut }) => {
                 variant="contained"
                 color="myBtn"
             >
-            Log Out
+            {t('master.aside.logout','Log Out')}
             </CButton>
           </Drawer>
         </React.Fragment>

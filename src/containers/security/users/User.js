@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { flatMap, isEmpty, isNil, get as _get } from "lodash";
+import { flatMap, isNil } from "lodash";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
 import DataViewFilter from "../../../components/common/dataView/filter";
@@ -17,21 +17,16 @@ import { useAccount } from "../../../hooks/user";
 import { getDepartments } from "../../../actions/departments";
 import { getUsers, deleteUser } from "../../../actions/users";
 import { getRoles } from "../../../actions/roles";
+import { t } from '../../../i18n'
 
 const User = ({
-  children,
-  logOut,
   account,
-  setPermissions,
-  permissions,
   users,
-  roles,
   departments,
   deleteUsers,
   fetchRoles,
   fetchUsers,
   fetchDepartments,
-  ...rest
 }) => {
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -39,59 +34,65 @@ const User = ({
   const [openDelete, setOpenDelete] = useState(false);
   const [filter, setFilter] = useState({});
   const [filterLoading, setFilterLoading] = useState(false);
+  const [departmentsFilter, setDepartments] = useState([]);
+  const [rolesFilter, setRoles] = useState([]);
 
   const { decrypt } = useAccount();
 
   const user = decrypt(account?.user);
 
   useEffect(() => {
-    fetchDepartments(user?.token, 0, 0, {}, true);
-    fetchRoles(user?.token, 0, 0, {}, true);
+    fetchDepartments(user?.token, 0, 0, {}, true).then((res) => {
+      const d = res?.map((item) => ({
+        name: `${item.id} - ${item.name}`,
+        id: item.id,
+      }));
+      setDepartments(d);
+    });
+    fetchRoles(user?.token, 0, 0, {}, true).then((r) => setRoles(r));
     setLoading(true);
     fetchUsers(user?.token, 0, 5, filter).finally(() => setLoading(false));
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const depts  = (isNil(departments) || isEmpty(departments)) ? [] : departments?.map((item) => ({
-    name: `${item.id} - ${item.name}`,
-    id: item.id,
-  }))
+
   const filters = [
     {
       id: "dni",
       type: "text",
-      label: "Identification",
+      label:  t('users.dni',"Identification"),
       maxLength: 20,
     },
     {
       id: "username",
       type: "text",
       noSpaces: true,
-      label: "Username",
+      label: t('users.username',"Username"),
       maxLength: 50,
     },
     {
       id: "name",
       type: "text",
-      label: "Name",
+      label: t('users.name',"Name"),
       maxLength: 100,
     },
     {
       id: "email",
       type: "text",
       noSpaces: true,
-      label: "Email",
+      label: t('users.email',"Email"),
       maxLength: 50,
     },
     {
       id: "profile",
       type: "select",
-      options: roles,
-      label: "Profile",
+      options: rolesFilter,
+      label: t('users.profile',"Profile"),
     },
     {
       id: "department",
       type: "select",
-      options: depts,
-      label: "Department",
+      options: departmentsFilter,
+      label: t('users.department',"Department"),
     },
   ];
 
@@ -100,11 +101,12 @@ const User = ({
       id: "id",
       label: "ID",
     },
-    { id: "name", label: "Name" },
-    { id: "username", label: "Username" },
-    { id: "email", label: "Email" },
-    { id: "actions", label: "Actions" },
+    { id: "name", label: t('users.name',"Name") },
+    { id: "username", label: t('users.username',"Username") },
+    { id: "email", label: t('users.email',"Email") },
+    { id: "actions", label: t('users.actions',"Actions"), },
   ];
+
   const handleFilter = (form) => {
     setFilterLoading(true);
     setFilter(form);
@@ -134,9 +136,10 @@ const User = ({
   const handleDeleteRow = () => {
     setOpenDelete(false);
     deleteUsers(user?.token, deleteId).then(() =>
-      fetchUsers(user?.token, 0, users.size, filter)
+      fetchUsers(user?.token, 0, 5, filter)
     );
   };
+
   return (
     <>
       <Helmet title="User" />
@@ -155,7 +158,7 @@ const User = ({
             if (canEdit) {
               render = [
                 <Tooltip
-                  title="Edit"
+                  title={t('users.edit',"Edit")}
                   arrow
                   onClick={() =>
                     history.replace(`/security/user/index/${values.id}`)
@@ -170,7 +173,7 @@ const User = ({
             if (canDelete) {
               render = [
                 ...render,
-                <Tooltip title="Delete" arrow>
+                <Tooltip title={t('users.delete',"Delete")} arrow>
                   <IconButton
                     size="small"
                     onClick={() => {
@@ -199,14 +202,14 @@ const User = ({
                     onClick={() => setFilterOpen(true)}
                     style={{ color: "rgb(255, 96, 13)", fontWeight: "bold" }}
                   >
-                    Filter
+                    {t('users.filter',"Filter")}
                   </Button>
                   <Button
                     endIcon={<AddIcon />}
                     onClick={() => history.replace("/security/user/index/add")}
                     style={{ color: "rgb(255, 96, 13)", fontWeight: "bold" }}
                   >
-                    Add New
+                    {t('users.addNew',"Add New")}
                   </Button>
                 </Grid>
               </Grid>

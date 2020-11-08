@@ -1,5 +1,7 @@
 import { getRoles as get, getAllRoles as getAll, getRoleById as getById, putRole as put, postRole as post, deleteRole as delet } from "../api/roles";
 import { GET_ROLES, GET_ROLE, PUT_ROLE, POST_ROLE, SET_NOTIFICATIONS, DELETE_ROLE } from "../actionTypes";
+import { useAccount } from '../hooks/user'
+import { t } from '../i18n'
 
 export const getRoles = (token, page, size, filter, all) => {
   const endpoint = all ? getAll : get
@@ -14,17 +16,19 @@ export const getRoles = (token, page, size, filter, all) => {
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -43,17 +47,19 @@ export const getRoleById = (token, id) => {
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -71,23 +77,25 @@ export const putRole = (token, id, payload) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The Role was successfully updated.",
+          notifications: t('action.roles.update',"The Role was successfully updated."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -105,23 +113,25 @@ export const deleteRole = (token, id) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The Role was successfully deleted.",
+          notifications: t('action.roles.delete', "The Role was successfully deleted."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -139,23 +149,25 @@ export const postRole = (token, payload) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The Role was successfully created.",
+          notifications: t('action.roles.create', "The Role was successfully created."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;

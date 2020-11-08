@@ -27,7 +27,7 @@ import Query from './containers/query/Query'
 import Notifications from './components/common/Notifications'
 import { SessionWrapper } from './components/layout/SessionWrapper'
 
-const PrivateRoute = ({ children, ...rest }) => {
+const PrivateRoute = ({ children, path, ...rest }) => {
   let user = useSelector(state => get(state, 'account.user', '{}'))
   const isAuth = !isEmpty(user)
   const { decrypt } = useAccount()
@@ -38,10 +38,20 @@ const PrivateRoute = ({ children, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={({ location }) => {
+      exact
+      render={({ location, match }) => {
           switch (true) {
-            case (isAuth && !user?.changePassword):
+            case (isAuth && !user?.changePassword && match?.isExact):
               return children
+              case (isAuth && !user?.changePassword && !match?.isExact):
+              return (
+                <Redirect
+                to={{
+                  pathname: "/",
+                  state: { from: location }
+                }}
+              />
+              )
             case (isAuth && user?.changePassword):
               return (
                 <Redirect
@@ -75,8 +85,8 @@ export default function RoutesGenerator() {
   return (
     <Router>
       <Switch>
-        <Route path="/login" component={LoginPage} />
-        <Route path="/reset-password" component={PasswordRecoveryPage} />
+        <Route exact path="/login" component={LoginPage} />
+        <Route exact path="/reset-password" component={PasswordRecoveryPage} />
         <PrivateRoute path="/maintanence/department/index/add">
           <AddDepartment />
         </PrivateRoute>
@@ -116,6 +126,7 @@ export default function RoutesGenerator() {
         <PrivateRoute path="/">
           <DashboardPage />
         </PrivateRoute>
+        
       </Switch>
       <Notifications
         open={!isEmpty(notifications.values)}

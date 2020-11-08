@@ -27,8 +27,6 @@ const Icon = (item, styles) => {
         return <SettingsApplicationsIcon style={{ color: "white", ...styles }} />;
       case (item.indexOf("query") !== -1):
         return <ImageSearchIcon style={{ color: "white", ...styles }} />;
-      case (item.indexOf("query") !== -1):
-        return <ImageSearchIcon style={{ color: "white", ...styles }} />;
       default:
         return <AppsIcon style={{ color: "white", ...styles }} />;
     }

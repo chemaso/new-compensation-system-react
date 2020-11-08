@@ -1,16 +1,15 @@
 import React from 'react';
 import CButton from '../common/ButtonWithLoading';
 import isNil from 'lodash/isNil'
-import TextField from '@material-ui/core/TextField';
+
 import Box from '@material-ui/core/Box';
 import InputPassword from '../common/InputPassword';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-    Link,
-} from "react-router-dom";
+
 import Copyright from '../common/Copyright'
 import { Typography } from '@material-ui/core';
+import { t } from '../../i18n'
 
 const useStyles = makeStyles((theme) => ({
     link: {
@@ -26,13 +25,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
+const PasswordRecovery = ({ onChange, onSubmit, onCancel, errors, loading }) => {
     const classes = useStyles();
 
     return (
         <>
-        <Typography variant='h6'>To continue please reset your password:</Typography>
+        <Typography variant='h6'>{t('passwordRecovery.form.title', 'To continue please reset your password:')}</Typography>
         <form onChange={onChange} className={classes.form} noValidate>
+            <InputPassword
+                error={!isNil(errors['old-password'])}
+                helperText={errors['old-password']}
+                margin="normal"
+                required
+                fullWidth  
+                id="old-password"
+                label={t('passwordRecovery.form.oldPassword', "Old Password")}
+                name="old-password"
+                autoFocus
+                autoComplete="password"
+       
+            />
             <InputPassword
                 error={!isNil(errors['password'])}
                 helperText={errors['password']}
@@ -40,10 +52,8 @@ const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
                 required
                 fullWidth  
                 id="password"
-                label="New Password"
+                label={t("passwordRecovery.form.newPassword", "New Password")}
                 name="password"
-                autoComplete="password"
-                autoFocus
             />
             <InputPassword
                 error={!isNil(errors['repeat-password'])}
@@ -52,21 +62,21 @@ const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
                 required
                 fullWidth
                 id="repeat-password"
-                label="Repeat Password"
+                label={t("passwordRecovery.form.repeatPassword", "Repeat Password")}
                 name="repeat-password"
                 autoComplete="repeat-password"
     
             />
-            <Grid container>
+            <Grid container style={{ justifyContent: 'space-between' }}>
             <CButton
-                onClick={onSubmit}
+                onClick={onCancel}
                 style={{ background: 'grey'}}
                 loading={loading}
                 variant="contained"
                 color="myBtn"
                 className={classes.submit}
             >
-                Cancel
+                {t("passwordRecovery.form.cancel", "Cancel")}
             </CButton>
             <CButton
                 onClick={onSubmit}
@@ -75,7 +85,7 @@ const PasswordRecovery = ({ onChange, onSubmit, errors, loading }) => {
                 color="myBtn"
                 className={classes.submit}
             >
-                Reset Password
+                {t("passwordRecovery.form.submit", "Reset Password")}
             </CButton>
             </Grid>
             <Box mt={5}>

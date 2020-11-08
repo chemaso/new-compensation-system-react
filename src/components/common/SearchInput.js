@@ -2,6 +2,7 @@ import React from 'react';
 import InputBase from '@material-ui/core/InputBase';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
+import { t } from '../../i18n'
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -54,7 +55,7 @@ const SearchInput = () => {
                 <SearchIcon />
             </div>
             <InputBase
-                placeholder="Search…"
+                placeholder={t('common.search.text' ,"Search…")}
                 classes={{
                     root: classes.inputRoot,
                     input: classes.inputInput,

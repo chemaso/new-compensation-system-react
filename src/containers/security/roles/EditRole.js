@@ -12,29 +12,25 @@ import { useAccount } from "../../../hooks/user";
 
 import Helmet from "../../../components/common/Helmet";
 import CButton from "../../../components/common/ButtonWithLoading";
-import { isNil } from "lodash";
+import { isNil, isEmpty } from "lodash";
+import { t } from '../../../i18n'
 
 const formInputs = [
   {
-    label: "ID",
-    id: "id",
-    disabled: true,
-    maxLength: 100,
-  },
-  {
-    label: "Name",
+    label: t("roles.editRole.name", "Name"),
     id: "name",
+    required: true,
     maxLength: 100,
   },
   {
-    label: "Description",
+    label: t("roles.editRole.description", "Description"),
     id: "description",
+    required: true,
     maxLength: 100,
   },
   {
-    label: "Permissions",
+    label: t("roles.editRole.permissions", "Permissions"),
     id: "permissions",
-    isEdit: true,
     type: "treeview",
   },
 ];
@@ -52,6 +48,7 @@ const EditRole = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [values, setValues] = useState({});
   const params = useParams();
   const { decrypt } = useAccount();
@@ -61,10 +58,12 @@ const EditRole = ({
     setLoading(true);
     getPermission(user?.token);
     getRole(user?.token, params.id).finally(() => setLoading(false));
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setValues(role);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
  
   let all = [];
@@ -86,6 +85,28 @@ const EditRole = ({
 
   map(permissions?.leafList);
 
+  const handleErrors = (values) => {
+    const requiredFields = formInputs.filter((item) => item.required)
+    let err = {}
+    requiredFields.map((v) => {
+      if (v.id === 'email') {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          const val  = values[v.id]
+          if (!regex.test(val)) {
+            err = { ...err, [v.id]: t("roles.editRole.error.email", "- Incorrect format")}
+            setErrors(err)
+          }
+      }
+      const vals = typeof values[v.id] === 'number' ? values[v.id].toString() : values[v.id]
+      if (isNil(values[v.id]) || isEmpty(vals)) {
+        err = { ...err, [v.id]: t("roles.editRole.error.required", "Is required")}
+        setErrors(err)
+      }
+      return err
+    })
+    return err
+  }
+
   const handleForm = (val) => {
     const per = all
     .map((i) => ({
@@ -100,11 +121,14 @@ const EditRole = ({
   }
   return (
     <>
-      <Helmet title="Edit Role" />
+      <Helmet title={t("roles.editRole.helmet", "Edit Role")} />
       <MasterLayout
         loading={false}
         render={({ user, menuItems, history }) => {
           const handleSubmit = () => {
+            const va = isNil(values?.permissions) ? {} : values?.permissions
+            const err = handleErrors(values)
+            if (isEmpty(err)) {
             let selection = values?.permissions
             if (!Array.isArray(values?.permissions)) {
               selection = all
@@ -112,7 +136,7 @@ const EditRole = ({
                 code: i.code,
                 description: i.description,
               }))
-              .filter((v) => values?.permissions[v.code]);
+              .filter((v) => va[v.code]);
             }
             const payload = {
               name: values?.name || '',
@@ -125,18 +149,22 @@ const EditRole = ({
                   setSubmitting(false)
                   history.push('/security/role/index')
                 })
+            }
+            else {
+              document.getElementById("master-content").scrollTo(0,0)
+            }
           };
           return loading ? (
             <DataViewSkeleton />
           ) : (
             <Grid justify="space-between" container style={{ marginRight: 20 }}>
               <Grid item xs={12} style={{ marginBottom: 20 }}>
-                <Typography variant="h5">Edit Role: #{params.id}</Typography>
+          <Typography variant="h5">{t("roles.editRole.title", "Edit Role")}{params.id}</Typography>
               </Grid>
               <Grid style={{ minHeight: "85%" }} item xs={12}>
                 <Divider />
                 <Grid xs={10} container style={{ marginBottom: 20 }}>
-                <UserForm form={values} permissions={permissions} formInputs={formInputs} onChange={handleForm} />
+                <UserForm errors={errors} form={values} permissions={permissions} formInputs={formInputs} onChange={handleForm} />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -152,7 +180,7 @@ const EditRole = ({
                     onClick={() => history.replace("/security/role/index")}
                     color="default"
                   >
-                    Cancel
+                    {t("roles.editRole.cancel", "Cancel")}
                   </Button>
                   <CButton
                     variant="contained"
@@ -166,7 +194,7 @@ const EditRole = ({
                     onClick={handleSubmit}
                     color="default"
                   >
-                    Save Changes
+                    {t("roles.editRole.save", "Save Role")}
                   </CButton>
                 </Grid>
               </Grid>

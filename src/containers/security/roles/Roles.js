@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { flatMap, isEmpty, isNil } from "lodash";
+import { flatMap, isNil } from "lodash";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
 import DataViewFilter from "../../../components/common/dataView/filter";
@@ -15,6 +15,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Helmet from "../../../components/common/Helmet";
 import { getRoles, deleteRole } from "../../../actions/roles";
 import { useAccount } from "../../../hooks/user";
+import { t } from '../../../i18n'
 
 const Roles = ({
   children,
@@ -39,12 +40,13 @@ const Roles = ({
   useEffect(() => {
     setLoading(true);
     getRolesList(user?.token, 0, 5, filter).finally(() => setLoading(false));
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filters = [
     {
       id: "name",
-      label: "Name",
+      label:  t('roles.name',"Name"),
       maxLength: 50,
       type: 'text',
     },
@@ -52,10 +54,10 @@ const Roles = ({
   const headCells = [
     {
       id: "id",
-      label: "ID",
+      label: t("roles.id", "ID"),
     },
-    { id: "name", label: "Name" },
-    { id: "actions", label: "Actions" },
+    { id: "name", label: t("roles.name", "Name") },
+    { id: "actions", label: t("roles.actions", "Actions") },
   ];
   const handleFilter = (form) => {
     setFilterLoading(true)
@@ -91,7 +93,7 @@ const Roles = ({
   };
   return (
     <>
-      <Helmet title="Roles" />
+      <Helmet title={t("roles.title", "Roles")} />
       <MasterLayout
         loading={false}
         render={({ menuItems, history }) => {
@@ -107,7 +109,7 @@ const Roles = ({
             if (canEdit) {
               render = [
                 <Tooltip
-                  title="Edit"
+                  title={t("roles.edit", "Edit")}
                   arrow
                   onClick={() =>
                     history.replace(`/security/role/index/${values.id}`)
@@ -122,7 +124,7 @@ const Roles = ({
             if (canDelete) {
               render = [
                 ...render,
-                <Tooltip title="Delete" arrow>
+                <Tooltip title={t("roles.delete", "Delete")} arrow>
                   <IconButton
                     size="small"
                     onClick={() => {
@@ -151,14 +153,14 @@ const Roles = ({
                     onClick={() => setFilterOpen(true)}
                     style={{ color: "rgb(255, 96, 13)", fontWeight: "bold" }}
                   >
-                    Filter
+                    {t("roles.filter", "Filter")}
                   </Button>
                   <Button
                     endIcon={<AddIcon />}
                     onClick={() => history.replace("/security/role/index/add")}
                     style={{ color: "rgb(255, 96, 13)", fontWeight: "bold" }}
                   >
-                    Add New
+                    {t("roles.addNew", "Add New")}
                   </Button>
                 </Grid>
               </Grid>

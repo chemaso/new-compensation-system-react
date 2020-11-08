@@ -6,12 +6,9 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import AppsIcon from "@material-ui/icons/Apps";
-import DnsIcon from "@material-ui/icons/Dns";
-import EqualizerIcon from '@material-ui/icons/Equalizer';
-import LaptopIcon from '@material-ui/icons/Laptop';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import Icon from './Icon'
+import { t } from '../../i18n'
 
 const useStyles = makeStyles({
   root: {
@@ -75,7 +72,7 @@ export default function CommonCard({ item, index, history }) {
               }}
               component="h2"
             >
-              {item.title}
+              {t(`common.${item.title.toLowerCase()}`, item.title)}
             </Typography>
           </CardContent>
           <CardActions>
@@ -88,7 +85,7 @@ export default function CommonCard({ item, index, history }) {
               size="small"
               endIcon={<ArrowRightAltIcon />}
             >
-              View
+              {t('common.cards.button', 'View')}
             </Button>
           </CardActions>
         </Grid>

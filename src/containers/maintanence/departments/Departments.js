@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { flatMap, isEmpty, isNil } from "lodash";
+import { flatMap, isNil } from "lodash";
 import MasterLayout from "../../../components/layout/MasterLayout";
 import { DataViewSkeleton } from "../../../components/common/Skeletons";
 import DataViewFilter from "../../../components/common/dataView/filter";
@@ -15,6 +15,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Helmet from "../../../components/common/Helmet";
 import { getDepartments, deleteDepartment } from '../../../actions/departments'
 import { useAccount } from "../../../hooks/user";
+import { t } from '../../../i18n'
 
 const Departments = ({
   children,
@@ -23,7 +24,6 @@ const Departments = ({
   removeDepartment,
   getDepartmentsList,
   departments,
-  ...rest
 }) => {
 
   const { decrypt } = useAccount();
@@ -34,7 +34,8 @@ const Departments = ({
     setLoading(true)
     getDepartmentsList(user?.token, 0, 5)
       .finally(() => setLoading(false))
-  }, [])
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -45,7 +46,7 @@ const Departments = ({
   const filters = [
     {
       id: "name",
-      label: "Name",
+      label: t('departments.addDepartment.name',"Name"),
       type: 'text',
       maxLength: 100,
     },
@@ -53,14 +54,14 @@ const Departments = ({
   const headCells = [
     {
       id: "id",
-      label: "ID",
+      label: t('departments.editDepartment.id',"ID"),
     },
     {
       id: "code",
-      label: "Code",
+      label: t('departments.editDepartment.code',"Code"),
     },
-    { id: "name", label: "Name" },
-    { id: "actions", label: "Actions" },
+    { id: "name", label: t('departments.editDepartment.name',"Name") },
+    { id: "actions", label: t('departments.actions', "Actions") },
   ];
   const handleFilter = (form) => {
     setFilterLoading(true)
@@ -94,7 +95,7 @@ const Departments = ({
   }
   return (
     <>
-      <Helmet title="Departments" />
+      <Helmet title={t('departments.title', 'Departments')}/>
       <MasterLayout
         loading={false}
         render={({ menuItems, history }) => {
@@ -111,7 +112,7 @@ const Departments = ({
             if (canEdit) {
               render = [
                 <Tooltip
-                  title="Edit"
+                  title={t('departments.edit',"Edit")}
                   arrow
                   onClick={() =>
                     history.replace(`/maintanence/department/index/${values.id}`)
@@ -126,7 +127,7 @@ const Departments = ({
             if (canDelete) {
               render = [
                 ...render,
-                <Tooltip title="Delete" arrow>
+                <Tooltip  title={t('departments.delete',"Delete")} arrow>
                   <IconButton size="small" onClick={() => {
                     setDeleteId(values.id)
                     setOpenDelete(true)
@@ -153,14 +154,14 @@ const Departments = ({
                     onClick={() => setFilterOpen(true)}
                     style={{ color: "rgb(255, 96, 13)", fontWeight: "bold" }}
                   >
-                    Filter
+                     {t('departments.filter',"Filter")}
                   </Button>
                   <Button
                     endIcon={<AddIcon />}
                     onClick={() => history.replace("/maintanence/department/index/add")}
                     style={{ color: "rgb(255, 96, 13)", fontWeight: "bold" }}
                   >
-                    Add New
+                     {t('departments.addNew',"Add new")}
                   </Button>
                 </Grid>
               </Grid>
@@ -189,18 +190,18 @@ const Departments = ({
               <NotificationsModal
                 open={openDelete}
                 handleModal={setOpenDelete}
-                content="Are you sure you want to delete the Department?"
-                title="Please Confirm"
+                content={t('departments.deleteModal',"Are you sure you want to delete the Department?")}
+                title={t('departments.confirmModal',"Please Confirm")}
                 buttons={[
                   {
-                    label: "Cancel",
+                    label: t('departments.cancel',"Cancel"),
                     style: "secondary",
                     action: () => {
                       setOpenDelete(false);
                     },
                   },
                   {
-                    label: "Continue",
+                    label: t('departments.continue',"Cancel"),
                     style: "primary",
                     action: handleDeleteRow,
                   },

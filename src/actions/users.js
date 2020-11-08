@@ -7,6 +7,9 @@ import {
   deleteUser as delet,
 } from "../api/user";
 import {
+  generatePassword as generate
+} from '../api/index'
+import {
   GET_USERS,
   GET_USER,
   PUT_USER,
@@ -14,6 +17,8 @@ import {
   SET_NOTIFICATIONS,
   DELETE_USER,
 } from "../actionTypes";
+import { useAccount } from '../hooks/user'
+import { t } from '../i18n'
 
 export const getUsers = (token, page, size, filter, all) => {
   const endpoint = all ? getAll : get;
@@ -28,17 +33,19 @@ export const getUsers = (token, page, size, filter, all) => {
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -57,17 +64,19 @@ export const getUserById = (token, id) => {
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -85,23 +94,25 @@ export const putUser = (token, id, payload) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The User was successfully updated.",
+          notifications: t('action.users.update', "The User was successfully updated."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -119,23 +130,25 @@ export const deleteUser = (token, id) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The User was successfully deleted.",
+          notifications: t('action.users.delete',"The User was successfully deleted."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;
@@ -153,23 +166,56 @@ export const postUser = (token, payload) => {
         dispatch(action);
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "The User was successfully created.",
+          notifications: t('action.users.delete',"The User was successfully created."),
           severity: "success",
         });
         return response;
       })
       .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
         if (e.message.indexOf("401") !== -1) {
           dispatch({
             type: SET_NOTIFICATIONS,
-            notifications: "Unauthorized",
+            notifications: t("common.unauthorized", "Unauthorized"),
             severity: "error",
           });
           return;
         }
         dispatch({
           type: SET_NOTIFICATIONS,
-          notifications: "Something went wrong, please try again later.",
+          notifications: t("common.error", "Something went wrong, please try again later."),
+          severity: "error",
+        });
+        return e.message;
+      });
+};
+
+export const generatePassword = (payload, token) => {
+  return (dispatch) =>
+    generate(payload, token)
+      .then(({ data: response }) => {
+        dispatch({
+          type: SET_NOTIFICATIONS,
+          notifications: t('action.users.reset',"Password successfully sended to user's email."),
+          severity: "success",
+        });
+        return response;
+      })
+      .catch((e) => {
+        const { unauthorized } = useAccount()
+        unauthorized(e, dispatch)
+        if (e.message.indexOf("401") !== -1) {
+          dispatch({
+            type: SET_NOTIFICATIONS,
+            notifications: t("common.unauthorized", "Unauthorized"),
+            severity: "error",
+          });
+          return;
+        }
+        dispatch({
+          type: SET_NOTIFICATIONS,
+          notifications: t("common.error", "Something went wrong, please try again later."),
           severity: "error",
         });
         return e.message;

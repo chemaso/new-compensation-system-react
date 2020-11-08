@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
-import { isEmpty, isNil, omit } from "lodash";
+import { isEmpty, omit } from "lodash";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import {
@@ -99,6 +99,8 @@ const useStyles = makeStyles({
 
 export default function TreeViewComponent({
   permissions,
+  error,
+  helperText,
   values = [],
   item,
   onChange,
@@ -137,6 +139,7 @@ export default function TreeViewComponent({
       } else {
         filter(c.childs, code);
       }
+      return childrens
     });
 
   map(permissions?.leafList);
@@ -169,6 +172,7 @@ export default function TreeViewComponent({
         ];
         return `${sliced.join(".")}.index`;
       }
+      return value
     });
 
   const handleCheck = (e) => {
@@ -252,6 +256,7 @@ export default function TreeViewComponent({
       >
         {item.label}
       </InputLabel>
+      {error && <span>{item.label} {helperText}.</span>}
       <Paper
         variant="outlined"
         style={{

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { setLogOut } from "../../actions/account";
 import MasterLayout from "../../components/layout/MasterLayout";
 import { DashboardSkeleton } from "../../components/common/Skeletons";
 import CommonCard from "../../components/common/CommonCards";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Helmet from '../../components/common/Helmet'
 
-const Query = ({ children, logOut, ...rest }) => {
-  const [loading, setLoading] = useState(false);
+const Query = ({ children, logOut }) => {
+  const [loading, ] = useState(false);
   return (
     <>
       <Helmet title="Query" />

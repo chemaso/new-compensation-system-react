@@ -29,6 +29,22 @@ export const useErrorValidator = (formValues, required) => {
                   return null
                 }
               }
+              if (item === "repeat-password") {
+                if (isEmpty(str)) {
+                  errorsObject = {
+                    ...errorsObject,
+                    [item]: 'Repeat Password is required.'
+                  }
+                  return ''
+                }
+                if (str !== formValues.password) {
+                  errorsObject = {
+                    ...errorsObject,
+                    [item]: 'Repeat Password should match with Password.'
+                  }
+                  return ''
+                }
+              }
               if (item === 'email') {
                 const validMail = validateEmail(str)
                 if (isEmpty(str)) {
@@ -67,6 +83,14 @@ export const useErrorValidator = (formValues, required) => {
                   errorsObject = {
                     ...errorsObject,
                     [item]: 'Last Name is required.'
+                  }
+                }
+              }
+              if (item === 'old-password') {
+                if (isEmpty(str)) {
+                  errorsObject = {
+                    ...errorsObject,
+                    [item]: 'Old Password is required.'
                   }
                 }
               }

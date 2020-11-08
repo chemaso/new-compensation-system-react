@@ -14,6 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import { MenuSkeleton } from '../../common/Skeletons'
 import { MasterLayoutBreadcrumbs as Breadcrumbs } from '../../common/Breadcrumbs'
 import Icon from '../../common/Icon'
+import { t } from '../../../i18n'
 
 const MasterLayoutBanner = ({ items = [], isMobile, loading }) => {
   const [open, setOpen] = useState(true)
@@ -35,7 +36,7 @@ const MasterLayoutBanner = ({ items = [], isMobile, loading }) => {
       return [val]
     })
     .filter((item) => item)
-  const titleVal = levels?.map((val) => val.title).toString().replace(',', ' - ')
+  const titleVal = levels?.map((val) => t(`common.${val.title.toLowerCase()}`, val.title)).toString().replace(',', ' - ')
   const styles = { fontSize: 40 }
   return (
         <Grid container alignItems='center' justify='space-between' style={{ color: 'white', paddingLeft: open ? 30 : 10, height: open ? 80 : 40, background: 'linear-gradient(45deg, rgb(255, 96, 13) 30%, rgb(247, 170, 55) 90%)'}}>

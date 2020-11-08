@@ -38,6 +38,7 @@ export default function MultiSelectBox({ options = [], onChange, values }) {
     const selValues = values?.map((v) => v.id)
     setAvailable(options?.filter((item) => selValues?.indexOf(item.id) === -1));
     setSelected(values)
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options]);
 
   const handleChange = (event, type) => {
