@@ -21,32 +21,34 @@ export const SessionWrapper = () => {
     if (isAuth) {
       user = decrypt(user)
     }
+    const current = moment()
 
     const { purge } = useContext(PersistorContext)
     useEffect(() => {
-        const current = moment()
 
         // If is null the expires will be far enought to not show the modal
         
         const expiresValue = isNil(user.expires) ? moment().endOf('year').format() : user.expires
-
-        const expiresIn = (moment(expiresValue).diff(current, 'seconds') - 60) * 1000 
+        const val = moment(expiresValue)
+        const expiresIn = (val.clone().diff(current, 'seconds') - 60) * 1000 
         const isExpired = moment(expiresValue).unix() <= current.unix()
 
         // Set the initial count down value
-        if (counter === '') {
-          setCounter(moment(expiresValue).diff(current, 'seconds')) 
-        }
 
-        // Set expiration modal
-
-        if (!isNil(user.id) && !open) {
+        if (!isNil(user.expires) && counter === '') {
+          const expireTime = val.clone().diff(current, 'seconds')
+          if (expireTime <= 60) {
+            setCounter(expireTime)
+          } 
+          if (!open){
+            // Set expiration modal
             setTimeout(() => setOpen(true), expiresIn)
+          }
         }
 
         // Purge session an return to login
 
-        if (open && isExpired) {
+        if (open && counter !== '' && counter <= 0) {
           dispatch(setAlreadyExpired(purge, history, setOpen))
         }
          // eslint-disable-next-line react-hooks/exhaustive-deps
